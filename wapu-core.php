@@ -2,11 +2,11 @@
 /**
  * Plugin Name: Wapuu Core
  * Plugin URI:  http://www.cherryframework.com/plugins/
- * Description: Core for wapuula.com
+ * Description: Core for jetimpex.com.
  * Version:     1.0.3
- * Author:      Wapuula Team
+ * Author:      JetImpex
  * Author URI:  http://cherryframework.com/
- * Text Domain: cherry-services
+ * Text Domain: wapu-core
  * License:     GPL-3.0+
  * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
  * Domain Path: /languages
