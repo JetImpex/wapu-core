@@ -63,7 +63,7 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 		 *
 		 * @var string
 		 */
-		private $version = '1.0.2';
+		private $version = '1.0.3';
 
 		/**
 		 * Core page trigger
