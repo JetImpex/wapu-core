@@ -65,6 +65,15 @@ class Wapu_Core_Blurb_Shortcode extends Wapu_Core_Shortcode {
 				'title'  => esc_html__( 'Link URL', 'wapu-core' ),
 				'value'  => '',
 			),
+			'link_target' => array(
+				'type'    => 'select',
+				'title'   => esc_html__( 'Link Target', 'wapu-core' ),
+				'value'   => 'none',
+				'options' => array(
+					'none'   => esc_html__( 'Self', 'wapu-core' ),
+					'_blank' => esc_html__( 'Blank', 'wapu-core' ),
+				),
+			),
 			'template' => array(
 				'type'   => 'text',
 				'title'  => esc_html__( 'Custom template filename (like example.php)', 'wapu-core' ),
@@ -106,6 +115,7 @@ class Wapu_Core_Blurb_Shortcode extends Wapu_Core_Shortcode {
 		$text      = ( ! empty( $atts['text'] ) ) ? wp_kses_post( $atts['text'] ) : false;
 		$link_text = ( ! empty( $atts['link_text'] ) ) ? wp_kses_post( $atts['link_text'] ) : '';
 		$link      = ( ! empty( $atts['link'] ) ) ? esc_attr( $atts['link'] ) : false;
+		$target    = ( ! empty( $atts['link_target'] ) && 'none' !== $atts['link_target'] ) ? ' target="_blank"' : '';
 		$class     = ( ! empty( $atts['class'] ) ) ? esc_attr( $atts['class'] ) : false;
 		$id        = ( ! empty( $atts['id'] ) ) ? sprintf( 'id="%s"', esc_attr( $atts['id'] ) ) : false;
 
