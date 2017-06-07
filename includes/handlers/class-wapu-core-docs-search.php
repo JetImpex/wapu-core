@@ -112,7 +112,7 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 			$exceptions = $this->args['exceptions'];
 
 			if ( empty( $exceptions ) || !  array_key_exists( $query, $exceptions ) ) {
-				return false;
+				return $query;
 			}
 
 			return $exceptions[ $query ];
