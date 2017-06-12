@@ -43,7 +43,7 @@ if ( ! class_exists( 'Wapu_Core_Parent_Terms' ) ) {
 
 		public function hide_tax_boxes( $hook ) {
 
-			if ( 'post.php' === $hook && 'post' === get_post_type() ) {
+			if ( in_array( $hook, array( 'post.php', 'post-new.php' ) ) && 'post' === get_post_type() ) {
 				echo '<style>#categorydiv, #tagsdiv-post_tag { display: none !important; }</style>';
 			}
 
