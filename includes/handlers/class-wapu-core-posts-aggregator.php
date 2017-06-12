@@ -213,9 +213,14 @@ if ( ! class_exists( 'Wapu_Core_Posts_Aggregator' ) ) {
 					'post_title'  => $post->post_title,
 					'post_status' => 'publish',
 				);
+
+				$cat_data = array();
+				$tag_data = array();
+
 				switch_to_blog( $this->main_blog_id );
+
 				$alias = wp_insert_post( $alias_data );
-				wp_remove_object_terms( $alias, 'uncategorized', 'category' );
+
 				restore_current_blog();
 
 				update_post_meta( $post_id, $this->child_alias, $alias );
@@ -223,6 +228,34 @@ if ( ! class_exists( 'Wapu_Core_Posts_Aggregator' ) ) {
 			}
 
 			$this->update_aliases( $alias, $post_id, $post );
+
+		}
+
+		/**
+		 * Get links and terms names list by tax
+		 *
+		 * @param  [type] $tax   [description]
+		 * @param  [type] $terms [description]
+		 * @return [type]        [description]
+		 */
+		public function get_alias_term_links( $tax, $terms ) {
+
+			$data = get_terms( array(
+				'taxonomy' => $tax,
+				'include'  => $terms,
+			) );
+
+			if ( empty( $data ) ) {
+				return array();
+			}
+
+			$result = array();
+
+			foreach ( $data as $term ) {
+				$result[ get_term_link( $term->term_id, $tax ) ] = $term->name;
+			}
+
+			return $result;
 
 		}
 
@@ -263,18 +296,43 @@ if ( ! class_exists( 'Wapu_Core_Posts_Aggregator' ) ) {
 				),
 			);
 
-			$terms = wp_get_post_terms( $current_post_id, array( 'post_tag', 'category' ) );
+			$cats = array();
+			$tags = array();
 
-			switch_to_blog( $this->main_blog_id );
-
-			update_post_meta( $main_post_id, $this->parent_alias, $data );
-
-			if ( ! empty( $terms ) ) {
-				foreach ( $terms as $term ) {
-					$this->update_alias_terms( $main_post_id, $term );
-				}
+			if ( ! empty( $_POST['_wapu_cat'] ) ) {
+				$cats = array_map( 'intval', $_POST['_wapu_cat'] );
 			}
 
+			if ( ! empty( $_POST['_wapu_tag'] ) ) {
+				$tags = array_map( 'intval', $_POST['_wapu_tag'] );
+			}
+
+			update_post_meta( $current_post_id, 'parent_cat', $cat_data );
+			update_post_meta( $current_post_id, 'parent_tag', $tag_data );
+
+			/**
+			 * Switch to main
+			 */
+			switch_to_blog( $this->main_blog_id );
+
+			$cat_data = array();
+			$tag_data = array();
+
+			if ( ! empty( $cats ) ) {
+				$cat_data = $this->get_alias_term_links( 'category', $cats );
+			}
+
+			if ( ! empty( $tags ) ) {
+				$tag_data = $this->get_alias_term_links( 'post_tag', $tags );
+			}
+
+			wp_set_post_tags( $main_post_id, $tags, $tags );
+			wp_set_post_categories( $main_post_id, $cats );
+			update_post_meta( $main_post_id, $this->parent_alias, $data );
+
+			/**
+			 * Restore to child
+			 */
 			restore_current_blog();
 
 		}
@@ -302,48 +360,6 @@ if ( ! class_exists( 'Wapu_Core_Posts_Aggregator' ) ) {
 			wp_reset_postdata();
 
 			return $excerpt;
-		}
-
-		/**
-		 * Upadte alias terms.
-		 *
-		 * @param  int    $main_post_id Post ID from main blog.
-		 * @param  object $term         Terms object from curretn blog.
-		 * @return bool
-		 */
-		public function update_alias_terms( $main_post_id, $term ) {
-
-			if ( ! term_exists( $term->slug, $term->taxonomy, $term->parent ) ) {
-
-				$append_term = wp_insert_term(
-					$term->name,
-					$term->taxonomy,
-					array(
-						'description' => $term->description,
-						'parent'      => $term->parent,
-						'slug'        => $term->slug,
-					)
-				);
-
-			} else {
-				$append_term = get_term_by( 'slug', $term->slug, $term->taxonomy, ARRAY_A );
-			}
-
-			if (
-				! is_wp_error( $append_term )
-				&& isset( $append_term['term_id'] )
-				&& ! has_term( $append_term['term_id'], $term->taxonomy, $main_post_id )
-			) {
-				$terms = wp_set_post_terms(
-					$main_post_id,
-					array( intval( $append_term['term_id'] ) ),
-					$term->taxonomy,
-					true
-				);
-				return true;
-			}
-
-			return false;
 		}
 
 		/**
