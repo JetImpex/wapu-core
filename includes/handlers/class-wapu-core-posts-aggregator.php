@@ -252,7 +252,6 @@ if ( ! class_exists( 'Wapu_Core_Posts_Aggregator' ) ) {
 			$result = array();
 
 			foreach ( $data as $term ) {
-				var_dump( get_term_link( $term->term_id ) );
 				$result[ get_term_link( $term->term_id ) ] = $term->name;
 			}
 
@@ -332,8 +331,6 @@ if ( ! class_exists( 'Wapu_Core_Posts_Aggregator' ) ) {
 			 * Restore to child
 			 */
 			restore_current_blog();
-
-			die();
 
 			update_post_meta( $current_post_id, 'parent_cat', $cat_data );
 			update_post_meta( $current_post_id, 'parent_tag', $tag_data );
