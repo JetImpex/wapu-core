@@ -34,23 +34,34 @@ class Wapu_Core_Parent_Categories_Widget extends Cherry_Abstract_Widget {
 	 */
 	public function widget( $args, $instance ) {
 
+		if ( ! is_multisite() || is_main_site() ) {
+
+			$this->setup_widget_data( $args, $instance );
+			$this->widget_start( $args, $instance );
+
+			echo '<ul class="categories-list">';
+				wp_list_categories( array( 'title_li' => false ) );
+			echo '</ul>';
+
+			$this->widget_end( $args );
+			$this->reset_widget_data();
+
+			return;
+		}
+
+		switch_to_blog( wapu_core_posts_aggregator()->main_blog_id );
+
 		$this->setup_widget_data( $args, $instance );
 		$this->widget_start( $args, $instance );
-
-		if ( is_multisite() ) {
-			switch_to_blog( wapu_core_posts_aggregator()->main_blog_id );
-		}
 
 		echo '<ul class="categories-list">';
 			wp_list_categories( array( 'title_li' => false ) );
 		echo '</ul>';
 
-		if ( is_multisite() ) {
-			restore_current_blog();
-		}
-
 		$this->widget_end( $args );
 		$this->reset_widget_data();
+
+		restore_current_blog();
 
 	}
 }
