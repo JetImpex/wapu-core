@@ -55,7 +55,12 @@ class Wapu_Core_Parent_Categories_Widget extends Cherry_Abstract_Widget {
 		$this->widget_start( $args, $instance );
 
 		echo '<ul class="categories-list">';
+			ob_start();
 			wp_list_categories( array( 'title_li' => false ) );
+			$result = ob_get_clean();
+
+			echo $this->fix_url_in_content( $result );
+
 		echo '</ul>';
 
 		$this->widget_end( $args );
@@ -64,6 +69,26 @@ class Wapu_Core_Parent_Categories_Widget extends Cherry_Abstract_Widget {
 		restore_current_blog();
 
 	}
+
+	/**
+	 * Fix URLs in content
+	 *
+	 * @param  [type] $content [description]
+	 * @return [type]          [description]
+	 */
+	public function fix_url_in_content( $content ) {
+
+		if ( false === strpos( home_url(), 'jetimpex.com' ) ) {
+			return $content;
+		}
+
+		if ( false === strpos( $content, home_url( '/blog/' ) ) ) {
+			$content = str_replace( home_url( '/' ), home_url( '/blog/' ), $content );
+		}
+
+		return $content;
+	}
+
 }
 
 add_action( 'widgets_init', 'wapu_core_register_parent_categories_widget' );
