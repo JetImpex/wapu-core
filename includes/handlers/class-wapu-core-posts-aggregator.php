@@ -324,6 +324,8 @@ if ( ! class_exists( 'Wapu_Core_Posts_Aggregator' ) ) {
 				$tag_data = $this->get_alias_term_links( 'post_tag', $tags );
 			}
 
+			die();
+
 			wp_set_post_tags( $main_post_id, $tags, $tags );
 			wp_set_post_categories( $main_post_id, $cats );
 			update_post_meta( $main_post_id, $this->parent_alias, $data );
