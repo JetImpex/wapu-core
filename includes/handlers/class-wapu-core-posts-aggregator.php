@@ -252,7 +252,8 @@ if ( ! class_exists( 'Wapu_Core_Posts_Aggregator' ) ) {
 			$result = array();
 
 			foreach ( $data as $term ) {
-				$result[ get_term_link( $term->term_id, $tax ) ] = $term->name;
+				var_dump( get_term_link( $term->term_id ) );
+				$result[ get_term_link( $term->term_id ) ] = $term->name;
 			}
 
 			return $result;
