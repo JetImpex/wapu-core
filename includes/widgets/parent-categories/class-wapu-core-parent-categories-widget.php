@@ -11,7 +11,7 @@ class Wapu_Core_Parent_Categories_Widget extends Cherry_Abstract_Widget {
 	public function __construct() {
 		$this->widget_cssclass    = 'widget-parent-categories';
 		$this->widget_description = esc_html__( 'Show categories list from parent site.', 'wapu-core' );
-		$this->widget_id          = 'wapu_related_posts';
+		$this->widget_id          = 'wapu_parent_categories';
 		$this->widget_name        = esc_html__( 'Wapu Parent Categories', 'wapu-core' );
 		$this->settings           = array(
 			'title'  => array(

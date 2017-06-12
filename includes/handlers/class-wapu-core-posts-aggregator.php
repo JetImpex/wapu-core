@@ -307,9 +307,6 @@ if ( ! class_exists( 'Wapu_Core_Posts_Aggregator' ) ) {
 				$tags = array_map( 'intval', $_POST['_wapu_tag'] );
 			}
 
-			update_post_meta( $current_post_id, 'parent_cat', $cat_data );
-			update_post_meta( $current_post_id, 'parent_tag', $tag_data );
-
 			/**
 			 * Switch to main
 			 */
@@ -334,6 +331,9 @@ if ( ! class_exists( 'Wapu_Core_Posts_Aggregator' ) ) {
 			 * Restore to child
 			 */
 			restore_current_blog();
+
+			update_post_meta( $current_post_id, 'parent_cat', $cat_data );
+			update_post_meta( $current_post_id, 'parent_tag', $tag_data );
 
 		}
 

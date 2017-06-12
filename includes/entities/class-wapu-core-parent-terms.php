@@ -32,7 +32,7 @@ if ( ! class_exists( 'Wapu_Core_Parent_Terms' ) ) {
 		 */
 		public function init() {
 
-			if ( is_main_site() ) {
+			if ( ! is_multisite() || is_main_site() ) {
 				return;
 			}
 
