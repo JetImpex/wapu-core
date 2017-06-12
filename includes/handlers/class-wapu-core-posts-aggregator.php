@@ -252,10 +252,29 @@ if ( ! class_exists( 'Wapu_Core_Posts_Aggregator' ) ) {
 			$result = array();
 
 			foreach ( $data as $term ) {
-				$result[ get_term_link( $term->term_id ) ] = $term->name;
+				$link = $this->get_term_link( $term->term_id );
+				$result[ $link ] = $term->name;
 			}
 
 			return $result;
+
+		}
+
+		/**
+		 * Get term link
+		 *
+		 * @param  [type] $link [description]
+		 * @return [type]       [description]
+		 */
+		public function get_term_link( $term_id ) {
+
+			$term_link = get_term_link( $term_id );
+
+			if ( false !== strpos( $term_link, 'jetimpex.com' ) && false === strpos( $term_link, '/blog/' ) ) {
+				$term_link = str_replace( home_url( '/' ), home_url( '/blog/' ), $term_link );
+			}
+
+			return $term_link;
 
 		}
 
