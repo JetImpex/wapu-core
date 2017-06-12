@@ -38,6 +38,7 @@ class Wapu_Core_Parent_Categories_Widget extends Cherry_Abstract_Widget {
 		$this->widget_start( $args, $instance );
 
 		if ( is_multisite() && ! is_main_site() ) {
+			var_dump('expression');
 			switch_to_blog( wapu_core_posts_aggregator()->main_blog_id );
 		}
 
@@ -46,6 +47,7 @@ class Wapu_Core_Parent_Categories_Widget extends Cherry_Abstract_Widget {
 		echo '</ul>';
 
 		if ( is_multisite() && ! is_main_site() ) {
+			var_dump('expression 2');
 			restore_current_blog();
 		}
 
