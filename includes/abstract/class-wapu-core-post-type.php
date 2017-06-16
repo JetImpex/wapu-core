@@ -122,8 +122,29 @@ if ( ! class_exists( 'Wapu_Core_Post_Type' ) ) {
 				add_action( 'save_post', array( $this, 'set_zero_views' ), 10, 3 );
 			}
 
+			add_action( 'pre_get_posts', array( $this, 'show_all_posts_on_tax_page' ) );
+
 			wapu_core_template_handler( $this->slug, $this->taxonomies() );
 			wapu_core_search_tax()->add_post_type( $this->slug );
+		}
+
+		/**
+		 * Show all availbale posts on taxonomy archive page
+		 *
+		 * @return null
+		 */
+		public function show_all_posts_on_tax_page( $query ) {
+
+			if ( ! $query->is_main_query() ) {
+				return;
+			}
+
+			foreach ( $this->taxonomies() as $tax ) {
+				if ( is_tax( $tax ) ) {
+					$query->set( 'posts_per_page', -1 );
+				}
+			}
+
 		}
 
 		/**
