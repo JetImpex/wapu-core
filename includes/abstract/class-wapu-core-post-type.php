@@ -126,6 +126,18 @@ if ( ! class_exists( 'Wapu_Core_Post_Type' ) ) {
 
 			wapu_core_template_handler( $this->slug, $this->taxonomies() );
 			wapu_core_search_tax()->add_post_type( $this->slug );
+
+			add_filter( 'wapu_core/post_type_switcher/allowed_post_types', array( $this, 'pass_to_switcher' ) );
+		}
+
+		/**
+		 * Pass current post type into allowed post types for switcher
+		 *
+		 * @return array
+		 */
+		public function pass_to_switcher( $post_types = array() ) {
+			$post_types[ $this->slug ] = $this->plural_name;
+			return $post_types;
 		}
 
 		/**

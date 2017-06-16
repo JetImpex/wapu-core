@@ -115,6 +115,7 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 				'blog-banner'        => 'entities/class-wapu-core-blog-banner.php',
 				'search-tax'         => 'entities/class-wapu-core-search-tax.php',
 				'parent-terms'       => 'entities/class-wapu-core-parent-terms.php',
+				'post-type-switcher' => 'entities/class-wapu-core-post-type-switcher.php',
 			),
 		);
 
@@ -354,6 +355,11 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 			wapu_core_how_to()->init();
 			wapu_core_faq()->init();
 			wapu_core_video_tutorials()->init();
+
+			/**
+			 * Initialize post type switcer
+			 */
+			wapu_core_post_type_switcher()->init();
 
 			/**
 			 * Initalize post rating
