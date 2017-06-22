@@ -43,6 +43,7 @@
 				.on( 'click.wapuCore', wapuCore.css.docSearch, wapuCore.processDocSearch )
 				.on( 'click.wapuCore', wapuCore.css.faqOpen, wapuCore.openFaq )
 				.on( 'focus.wapuCore', wapuCore.css.docInput, wapuCore.removeError )
+				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.removeError )
 				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.openOnEnter )
 				.on( 'wapuCorePopupOpened', wapuCore.getTicketWidget )
 				.on( 'wapuCorePopupOpened', wapuCore.getVideo );
@@ -181,10 +182,13 @@
 
 		removeError: function() {
 
-			var $msg = $( wapuCore.css.docMsg );
+			var $msg  = $( wapuCore.css.docMsg ),
+				$this = $( this );
 
-			$( this ).removeClass( 'error' );
-			$msg.html( '' ).removeClass( wapuCore.css.docMsgError );
+			if ( $this.hasClass( 'error' ) ) {
+				$( this ).removeClass( 'error' );
+				$msg.html( '' ).removeClass( wapuCore.css.docMsgError );
+			}
 		},
 
 		closePopup: function( event ) {
