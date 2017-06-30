@@ -53,9 +53,10 @@ if ( ! class_exists( 'Wapu_Core_How_To' ) ) {
 			$this->rewrite_options = true;
 			$this->taxonomies  = array(
 				'category' => array(
-					'single_name' => esc_html__( 'Category', 'wapu-core' ),
-					'plural_name' => esc_html__( 'Categories', 'wapu-core' ),
-					'args'        => array(
+					'single_name'       => esc_html__( 'Category', 'wapu-core' ),
+					'plural_name'       => esc_html__( 'Categories', 'wapu-core' ),
+					'breadcrumbs_trail' => true,
+					'args'              => array(
 						'hierarchical'      => true,
 						'show_admin_column' => true,
 					),

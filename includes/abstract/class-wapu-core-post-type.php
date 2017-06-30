@@ -93,6 +93,13 @@ if ( ! class_exists( 'Wapu_Core_Post_Type' ) ) {
 		public $order_meta = '_wapu_order';
 
 		/**
+		 * Holder for breadcrumbs trailing taxonomy name
+		 *
+		 * @var string
+		 */
+		public $trail_tax = null;
+
+		/**
 		 * Initalize post type
 		 * @return void
 		 */
@@ -402,9 +409,10 @@ if ( ! class_exists( 'Wapu_Core_Post_Type' ) ) {
 			foreach ( $this->taxonomies as $tax => $data ) {
 
 				$data = wp_parse_args( $data, array(
-					'single_name' => null,
-					'plural_name' => null,
-					'args'        => array(),
+					'single_name'       => null,
+					'plural_name'       => null,
+					'breadcrumbs_trail' => false,
+					'args'              => array(),
 				) );
 
 				$labels = array(
@@ -433,8 +441,28 @@ if ( ! class_exists( 'Wapu_Core_Post_Type' ) ) {
 
 				register_taxonomy( $this->tax( $tax ), $this->slug, $args );
 
+				if ( true === $data['breadcrumbs_trail'] ) {
+					$this->trail_tax = $this->tax( $tax );
+					add_filter( 'cherry_breadcrumbs_trail_taxonomies', array( $this, 'add_trail_tax' ) );
+				}
+
 			}
 
+		}
+
+		/**
+		 * Add breadcrumbs trailing taxonomy for current post type
+		 *
+		 * @param  array $taxonomies
+		 * @return array
+		 */
+		public function add_trail_tax( $taxonomies = array() ) {
+
+			if ( null !== $this->trail_tax ) {
+				$taxonomies[ $this->slug ] = $this->trail_tax;
+			}
+
+			return $taxonomies;
 		}
 
 		/**
