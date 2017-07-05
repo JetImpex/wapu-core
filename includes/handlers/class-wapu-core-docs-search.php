@@ -65,7 +65,7 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 			$this->args = wp_parse_args( $args, $this->args );
 
 			$this->sanitize_cb = array(
-				'http://documentation.templatemonster.com/index.php?project=%s' => array( $this, 'sanitize_old_wp' ),
+				'http:\/\/documentation\.[a-z]*\.com\/[a-zA-Z-_]*\/index\.php\?project=' => array( $this, 'sanitize_old_wp' ),
 			);
 		}
 
@@ -111,7 +111,7 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 			$query      = strtolower( $query );
 			$exceptions = $this->args['exceptions'];
 
-			if ( empty( $exceptions ) || !  array_key_exists( $query, $exceptions ) ) {
+			if ( empty( $exceptions ) || ! array_key_exists( $query, $exceptions ) ) {
 				return $query;
 			}
 
@@ -219,8 +219,6 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 				)
 			);
 
-
-
 			$status = wp_remote_retrieve_response_code( $response );
 
 			if ( 404 === $status ) {
@@ -233,11 +231,33 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 				return false;
 			}
 
-			if ( ! empty( $this->sanitize_cb ) && isset( $this->sanitize_cb[ $host ] ) ) {
-				return call_user_func( $this->sanitize_cb[ $host ], $body, $request_url, $name );
-			} else {
+			return $this->sanitize_request( $request_url, $body, $name );
+		}
+
+		/**
+		 * Sanitize request.
+		 *
+		 * @param  string $request_url [description]
+		 * @param  string $body        [description]
+		 * @param  string $name        [description]
+		 * @return string
+		 */
+		public function sanitize_request( $request_url, $body, $name ) {
+
+			if ( empty( $this->sanitize_cb ) ) {
 				return $request_url;
 			}
+
+			foreach ( $this->sanitize_cb as $regex => $cb ) {
+
+				if ( ! preg_match( '/' . $regex . '/', $request_url ) ) {
+					continue;
+				}
+
+				return call_user_func( $cb, $body, $request_url, $name );
+			}
+
+			return $request_url;
 		}
 
 		/**
