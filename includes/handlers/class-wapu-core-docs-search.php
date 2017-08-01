@@ -249,7 +249,8 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 			$response = wp_remote_get(
 				$request_url,
 				array(
-					'timeout' => 30,
+					'timeout'   => 30,
+					'sslverify' => false,
 				)
 			);
 
