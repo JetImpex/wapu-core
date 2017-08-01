@@ -32,19 +32,15 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 		 * @var array
 		 */
 		public $args = array(
-			'tm-base'      => 'https://www.templatemonster.com',
-			'product-base' => 'wordpress-themes',
-			'doc-link-id'  => 'custom-documentation-link',
-			'exceptions'   => array(
-				'monstroid2' => 'monstroid_2',
-				'monstroid'  => 'monstroid_2',
-			),
-			'name-hosts'   => array(
+			'docs-base'        => 'https://documentation.jetimpex.com',
+			'tm-base'          => 'https://www.templatemonster.com',
+			'product-base'     => 'wordpress-themes',
+			'doc-link-id'      => 'custom-documentation-link',
+			'exceptions'       => array( 'monstroid2' => 'monstroid_2', 'monstroid'  => 'monstroid_2' ),
+			'ignored-prefixes' => array( 'tm-', 'jx-' ),
+			'name-hosts'       => array(
 				'http://documentation.templatemonster.com/index.php?project=%s',
 				'http://documentation.templatemonster.com/projects/%s/index.html',
-			),
-			'ignored-prefixes' => array(
-				'tm-', 'jx-',
 			),
 		);
 
@@ -54,6 +50,13 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 		 * @var array
 		 */
 		public $sanitize_cb = array();
+
+		/**
+		 * Templates API URL.
+		 *
+		 * @var string
+		 */
+		public $templates_api = 'http://api.templatemonster.com/products/v1/products/';
 
 		/**
 		 * Set arguments.
@@ -127,6 +130,12 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 		 */
 		public function search_by_template_id( $id ) {
 
+			$api_result = $this->get_by_id_from_api( $id );
+
+			if ( $api_result && ! empty( $this->args['docs-base'] ) ) {
+				return trailingslashit( $this->args['docs-base'] ) . $api_result;
+			}
+
 			$request_url = sprintf( '%s/%s/%d.html', $this->args['tm-base'], $this->args['product-base'], $id );
 			$regex       = '/<a id="' . $this->args['doc-link-id'] . '".+?href="(.+?)"/';
 
@@ -147,6 +156,31 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 				return false;
 			}
 
+		}
+
+		/**
+		 * Try to search by template ID in TM API.
+		 *
+		 * @param  int $id Template ID.
+		 * @return string|bool
+		 */
+		public function get_by_id_from_api( $id = 0 ) {
+
+			$response = wp_remote_get( $this->templates_api . $id );
+			$body     = wp_remote_retrieve_body( $response );
+			$data     = json_decode( $body, true );
+
+			if ( ! isset( $data['properties'] ) ) {
+				return false;
+			}
+
+			foreach ( $data['properties'] as $property ) {
+				if ( 'documentation-link' === $property['propertyName'] && ! empty( $property['value'] ) ) {
+					return $property['value'];
+				}
+			}
+
+			return false;
 		}
 
 		/**

@@ -60,6 +60,13 @@ class Wapu_Core_Docs_Search_Shortcode extends Wapu_Core_Shortcode {
 	public function register_docs_settings( $settings ) {
 
 		$settings['tabs']['docs']        = esc_html__( 'Docs Search', 'wapu-core' );
+		$settings['controls']['docs-base'] = array(
+			'type'        => 'text',
+			'title'       => esc_html__( 'Documentation Server Base', 'wapu-core' ),
+			'placeholder' => esc_html__( 'Documentation Server URL', 'wapu-core' ),
+			'value'       => 'https://documentation.jetimpex.com',
+			'parent'      => 'docs',
+		);
 		$settings['controls']['tm-base'] = array(
 			'type'        => 'text',
 			'title'       => esc_html__( 'TemplateMonster Base', 'wapu-core' ),
@@ -193,6 +200,7 @@ class Wapu_Core_Docs_Search_Shortcode extends Wapu_Core_Shortcode {
 		}
 
 		$options = array(
+			'docs-base'        => wapu_core_global_settings()->get( 'docs-base' ),
 			'tm-base'          => wapu_core_global_settings()->get( 'tm-base' ),
 			'product-base'     => wapu_core_global_settings()->get( 'product-base' ),
 			'doc-link-id'      => wapu_core_global_settings()->get( 'doc-link-id' ),
