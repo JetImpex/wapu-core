@@ -89,6 +89,42 @@
 	}
 }
 
+.themes-list {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0 -25px;
+}
+.theme-item {
+	width: 33.3333%;
+	padding: 25px;
+}
+.theme-more.hidden {
+	display: none;
+}
+.theme-filters {
+	display: flex;
+}
+.theme-filter {
+	position: relative;
+	&__item {
+		display: block;
+	}
+	&__terms {
+		position: absolute;
+		top: -999em;
+		left: 0;
+		width: 600px;
+		visibility: hidden;
+		background: #fff;
+		padding: 20px;
+		columns: 3;
+		&.visible-filter {
+			visibility: visible;
+			top: 100%;
+		}
+	}
+}
+
 .faq {
 	&-post {
 		&__title {

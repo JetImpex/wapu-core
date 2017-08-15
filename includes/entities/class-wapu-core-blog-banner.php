@@ -110,6 +110,10 @@ if ( ! class_exists( 'Wapu_Core_Blog_Banner' ) ) {
 		 */
 		public function pass_banner_to_parent( $input ) {
 
+			if ( ! function_exists( 'switch_to_blog' ) ) {
+				return $input;
+			}
+
 			if ( ! empty( $input ) ) {
 
 				$current_blog = get_current_blog_id();
