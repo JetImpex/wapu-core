@@ -550,7 +550,7 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 			$this->get_core()->init_module(
 				'cherry5-assets-loader',
 				array(
-					'css' => array( 'wapu-core', 'nucleo-outline' ),
+					'css' => array( 'nucleo-outline' ),
 				)
 			);
 		}

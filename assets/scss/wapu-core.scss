@@ -103,11 +103,21 @@
 }
 .theme-filters {
 	display: flex;
+	&__back {
+		display: none;
+	}
 }
+.filters-mobile-trigger {
+	display: none;
+}
+
 .theme-filter {
 	position: relative;
 	&__item {
 		display: block;
+	}
+	&__back {
+		display: none;
 	}
 	&__terms {
 		position: absolute;
@@ -118,11 +128,59 @@
 		background: #fff;
 		padding: 20px;
 		columns: 3;
+		z-index: 999;
 		&.visible-filter {
 			visibility: visible;
 			top: 100%;
 		}
 	}
+}
+
+.filters-wrap.filters-mobile {
+	.filters-mobile-trigger {
+		display: block;
+	}
+	.theme-filters {
+		position: fixed;
+		left: -999em;
+		top: 0;
+		bottom: 0;
+		overflow: auto;
+		flex-direction: column;
+		z-index: 999;
+		transition: transform 300ms linear;
+		transform: translateX(50%);
+		&.visible-filters {
+			left: 0;
+			right: 0;
+			transform: translateX(0);
+		}
+		&__back {
+			display: block;
+		}
+		.theme-filter__terms {
+			position: fixed;
+			top: 0;
+			bottom: 0;
+			overflow: auto;
+			left: -999em;
+			transition: transform 300ms linear;
+			visibility: visible;
+			transform: translateX(50%);
+			width: auto;
+			columns: unset;
+			&.visible-filter {
+				top: 0;
+				left: 0;
+				right: 0;
+				transform: translateX(0);
+			}
+		}
+		.theme-filter__back {
+			display: block;
+		}
+	}
+
 }
 
 .faq {
