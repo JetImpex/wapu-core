@@ -68,7 +68,7 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 			$this->args = wp_parse_args( $args, $this->args );
 
 			$this->sanitize_cb = array(
-				'http:\/\/documentation\.[a-z]*\.com\/[a-zA-Z-_]*\/index\.php\?project=' => array( $this, 'sanitize_old_wp' ),
+				'http:\/\/documentation\.[a-z]*\.com\/[a-zA-Z-_\/]*index\.php\?project=' => array( $this, 'sanitize_old_wp' ),
 			);
 		}
 
@@ -81,13 +81,12 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 		public function run( $query ) {
 
 			$query  = trim( $query );
+			$query  = $this->sanitize_query( $query );
 			$stored = $this->try_get_stored_result( $query );
 
 			if ( ! empty( $stored ) ) {
 				return $stored;
 			}
-
-			$query = $this->sanitize_query( $query );
 
 			if ( 0 < intval( $query ) ) {
 				$result = $this->search_by_template_id( $query );
