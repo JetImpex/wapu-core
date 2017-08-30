@@ -45,6 +45,11 @@ class Wapu_Core_Blurb_Shortcode extends Wapu_Core_Shortcode {
 				'multi_upload' => false,
 				'library_type' => 'image',
 			),
+			'image_url' => array(
+				'type'   => 'text',
+				'title'  => esc_html__( 'Direct URL to required image (rewrite previous option)', 'wapu-core' ),
+				'value'  => '',
+			),
 			'title' => array(
 				'type'   => 'text',
 				'title'  => esc_html__( 'Title', 'wapu-core' ),
@@ -110,7 +115,8 @@ class Wapu_Core_Blurb_Shortcode extends Wapu_Core_Shortcode {
 
 		$font_icon = ( ! empty( $atts['font_icon'] ) ) ? esc_attr( $atts['font_icon'] ) : false;
 		$image     = ( ! empty( $atts['image'] ) ) ? intval( $atts['image'] ) : false;
-		$img_tag   = ( $image ) ? wp_get_attachment_image( $image, 'full', '', array( 'class' => 'blurb__img' ) ) : '';
+		$image_url = ( ! empty( $atts['image_url'] ) ) ? esc_url( $atts['image_url'] ) : false;
+		$img_tag   = $this->get_img_tag( $image, $image_url );
 		$title     = ( ! empty( $atts['title'] ) ) ? wp_kses_post( $atts['title'] ) : false;
 		$text      = ( ! empty( $atts['text'] ) ) ? wp_kses_post( $atts['text'] ) : false;
 		$link_text = ( ! empty( $atts['link_text'] ) ) ? wp_kses_post( $atts['link_text'] ) : '';
@@ -122,6 +128,29 @@ class Wapu_Core_Blurb_Shortcode extends Wapu_Core_Shortcode {
 		include $tmplfile;
 
 		return ob_get_clean();
+	}
+
+	/**
+	 * Returns img tag by ID or by URL
+	 *
+	 * @param  integer $id  Image ID
+	 * @param  string  $url Image URL
+	 * @return string
+	 */
+	public function get_img_tag( $id = 0, $url = null ) {
+
+		if ( ! $id && ! $url ) {
+			return;
+		}
+
+		$img_class = 'blurb__img';
+
+		if ( $url ) {
+			return sprintf( '<img src="%1$s" class="%2$s" alt="">', $url, $img_class );
+		}
+
+		return wp_get_attachment_image( $id, 'full', '', array( 'class' => $img_class ) );
+
 	}
 
 	/**
