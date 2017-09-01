@@ -374,7 +374,7 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 			/**
 			 * Initalize posts aggregator module
 			 */
-			wapu_core_posts_aggregator()->init();
+			//wapu_core_posts_aggregator()->init();
 
 			$this->init_shortcodes();
 
@@ -383,7 +383,7 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 			 *
 			 * Note! Must be before wapu_core_global_settings()->init() call
 			 */
-			wapu_core_blog_banner()->init();
+			//wapu_core_blog_banner()->init();
 
 			/**
 			 * Init global settings
