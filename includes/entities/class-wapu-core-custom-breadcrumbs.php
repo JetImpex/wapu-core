@@ -48,7 +48,7 @@ if ( ! class_exists( 'Wapu_Core_Custom_Breadcrumbs' ) ) {
 			$url   = esc_url( network_home_url() );
 			$label = esc_html__( 'Home', 'wapu-core' );
 
-			$instance->_add_item( 'target_format', $label, $url, '', true );
+			$instance->_add_item( 'link_format', $label, $url, '', true );
 
 			return $this->maybe_fix_duplicate_links( $instance->items );
 		}
