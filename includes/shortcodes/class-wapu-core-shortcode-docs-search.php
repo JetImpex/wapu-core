@@ -49,6 +49,44 @@ class Wapu_Core_Docs_Search_Shortcode extends Wapu_Core_Shortcode {
 			'result-title' => esc_html__( 'Documentation Link:', 'wapu-core' ),
 			'result-text'  => esc_html__( 'Documentation found. Redirecting...', 'wapu-core' ),
 		) );
+
+		add_action( 'admin_init', array( $this, 'reset_docs_cache' ) );
+
+	}
+
+	/**
+	 * Reset documentation seearch cache
+	 *
+	 * @return void
+	 */
+	public function reset_docs_cache() {
+
+		$password = wapu_core_global_settings()->get( 'reset-password' );
+
+		if ( ! $password ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( ! isset( $_GET['reset_search_cache'] ) || $password !== $_GET['reset_search_cache'] ) {
+			return;
+		}
+
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'found_docs';
+
+		var_dump( $table );
+
+		$res = $wpdb->query( "TRUNCATE TABLE $table" );
+
+		var_dump( $res );
+
+		wp_die( 'Cache cleared!' );
+
 	}
 
 	/**
@@ -119,6 +157,13 @@ class Wapu_Core_Docs_Search_Shortcode extends Wapu_Core_Shortcode {
 			'type'        => 'textarea',
 			'title'       => esc_html__( 'Search results text', 'wapu-core' ),
 			'value'       => esc_html__( 'You can copy link leading to the unique documentation of your template using "Copy" button. Otherwise, press on "Open" button to use the direct link to go to documentation page immediately!', 'wapu-core' ),
+			'parent'      => 'docs',
+			'sanitize_cb' => array( $this, 'sanitize_text' ),
+		);
+		$settings['controls']['reset-password'] = array(
+			'type'        => 'text',
+			'title'       => esc_html__( 'Add reset cache password', 'wapu-core' ),
+			'value'       => '',
 			'parent'      => 'docs',
 			'sanitize_cb' => array( $this, 'sanitize_text' ),
 		);
