@@ -24,7 +24,7 @@
 
 		init: function() {
 
-			if ( 'undefined' !== typeof Clipboard ) {
+			if ( 'undefined' !== typeof Clipboard.prototype.defaultTarget ) {
 
 				wapuCore.objects.clipboard = new Clipboard( '.copy-to-clipboard', {
 					text: function( trigger ) {
