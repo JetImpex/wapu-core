@@ -79,12 +79,7 @@ class Wapu_Core_Docs_Search_Shortcode extends Wapu_Core_Shortcode {
 
 		$table = $wpdb->prefix . 'found_docs';
 
-		var_dump( $table );
-
 		$res = $wpdb->query( "TRUNCATE TABLE $table" );
-
-		var_dump( $res );
-
 		wp_die( 'Cache cleared!' );
 
 	}
