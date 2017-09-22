@@ -68,7 +68,7 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 			$this->args = wp_parse_args( $args, $this->args );
 
 			$this->sanitize_cb = array(
-				'http:\/\/documentation\.[a-z]*\.com\/[a-zA-Z-_\/]*index\.php\?project=' => array( $this, 'sanitize_old_wp' ),
+				'http[s]?:\/\/documentation\.[a-z]*\.com\/[a-zA-Z-_\/]*index\.php\?project=' => array( $this, 'sanitize_old_wp' ),
 			);
 		}
 

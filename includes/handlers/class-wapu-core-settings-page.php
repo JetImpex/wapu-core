@@ -290,6 +290,8 @@ if ( ! class_exists( 'Wapu_Core_Settings_Page' ) ) {
 
 			}
 
+			do_action( 'wapu-core/settings-page/save', $new_settings, $this->args );
+
 			update_option( $this->args['slug'], $new_settings );
 
 			wp_redirect( add_query_arg(
