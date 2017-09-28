@@ -112,6 +112,15 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 
 			$query      = strtolower( $query );
 			$exceptions = $this->args['exceptions'];
+			$query      = str_replace( array(
+				'.',
+				',',
+				'\'',
+				'"',
+				':',
+				'\\',
+				'/',
+			), '', $query );
 
 			if ( empty( $exceptions ) || ! array_key_exists( $query, $exceptions ) ) {
 				return $query;
@@ -190,19 +199,31 @@ if ( ! class_exists( 'Wapu_Core_Docs_Search' ) ) {
 		 */
 		public function search_by_theme_name( $query ) {
 
+			$search_in = array( $query );
+
 			if ( ! empty( $this->args['ignored-prefixes'] ) ) {
-				$query = str_replace( $this->args['ignored-prefixes'], '', $query );
+				$search_in[] = str_replace( $this->args['ignored-prefixes'], '', $query );
+
+				foreach ( $this->args['ignored-prefixes'] as $prefix ) {
+
+					if ( false === strpos( $query , $prefix ) ) {
+						$search_in[] = $prefix . $query;
+					}
+				}
+
 			}
 
 			foreach ( array( '_', '-', '' ) as $replace ) {
+				$search_in[] = str_replace( ' ', $replace, $query );
+			}
 
-				$replaced = str_replace( ' ', $replace, $query );
-				$result   = $this->request_by_name( $replaced );
+			$search_in = array_unique( array_filter( $search_in ) );
 
+			foreach ( $search_in as $s ) {
+				$result = $this->request_by_name( $s );
 				if ( $result ) {
 					return $result;
 				}
-
 			}
 
 		}
