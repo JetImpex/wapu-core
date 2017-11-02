@@ -124,6 +124,7 @@ if ( ! class_exists( 'Wapu_Core_Related_Posts' ) ) {
 					'taxonomy' => $this->tax,
 					'field'    => 'term_id',
 					'terms'    => $post_terms,
+					'operator' => 'AND',
 				),
 			);
 
