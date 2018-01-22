@@ -3,7 +3,7 @@
  * Plugin Name: Wapuu Core
  * Plugin URI:  http://www.cherryframework.com/plugins/
  * Description: Core for jetimpex.com.
- * Version:     1.1.12
+ * Version:     1.2.0
  * Author:      JetImpex
  * Author URI:  http://cherryframework.com/
  * Text Domain: wapu-core
@@ -63,7 +63,7 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 		 *
 		 * @var string
 		 */
-		private $version = '1.1.12';
+		private $version = '1.2.0';
 
 		/**
 		 * Core page trigger
