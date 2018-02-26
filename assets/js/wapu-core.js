@@ -12,7 +12,8 @@
 			docMsg: '.doc-search__msg',
 			docMsgError: 'msg-error',
 			popupOverlay: '.wapu-popup__overlay',
-			faqOpen: '.faq-post__title'
+			faqOpen: '.faq-post__title',
+			tabsNavItem: '.account-tabs__nav-item-link',
 		},
 
 		objects: {
@@ -42,15 +43,62 @@
 				.on( 'click.wapuCore', wapuCore.css.rating, wapuCore.processRating )
 				.on( 'click.wapuCore', wapuCore.css.docSearch, wapuCore.processDocSearch )
 				.on( 'click.wapuCore', wapuCore.css.faqOpen, wapuCore.openFaq )
+				.on( 'click.wapuCore', wapuCore.css.tabsNavItem, wapuCore.switchTabs )
 				.on( 'focus.wapuCore', wapuCore.css.docInput, wapuCore.removeError )
 				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.removeError )
 				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.openOnEnter )
 				.on( 'wapuCorePopupOpened', wapuCore.getTicketWidget )
 				.on( 'wapuCorePopupOpened', wapuCore.getVideo );
 
+			this.loadFirstTab();
+
 		},
 
-		clipboardSuccessCallback: function ( event ) {
+		loadFirstTab: function() {
+
+			if ( ! $( '.account-tabs' ).length ) {
+				return;
+			}
+
+			var hash      = window.location.hash.substr( 1 ),
+				firstTab  = 'settings',
+				$nav      = $( '.account-tabs__nav' ),
+				$content  = $( '.account-tabs__content' );
+
+			if ( hash ) {
+				firstTab = hash;
+			}
+
+			$nav.find( '[href="#' + firstTab + '"]' ).closest( '.account-tabs__nav-item' ).addClass( 'active-item' );
+			$content.find( '#' + firstTab ).addClass( 'active-item' );
+
+		},
+
+		switchTabs: function( event ) {
+
+			event.preventDefault();
+
+			var $this    = $( this ),
+				$item    = $this.closest( '.account-tabs__nav-item' ),
+				$content = $( '.account-tabs__content' ),
+				tab      = $this.attr( 'href' );
+
+			$item
+				.addClass( 'active-item' )
+				.siblings( '.active-item' )
+				.removeClass( 'active-item' );
+
+			$content
+				.find( tab )
+				.addClass( 'active-item' )
+				.siblings( '.active-item' )
+				.removeClass( 'active-item' );
+
+			history.pushState( null, null, tab );
+
+		},
+
+		clipboardSuccessCallback: function( event ) {
 
 			$( event.trigger ).addClass( 'copied' );
 

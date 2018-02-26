@@ -3,7 +3,7 @@
  * Plugin Name: Wapuu Core
  * Plugin URI:  http://www.cherryframework.com/plugins/
  * Description: Core for jetimpex.com.
- * Version:     1.2.0
+ * Version:     2.0.0
  * Author:      JetImpex
  * Author URI:  http://cherryframework.com/
  * Text Domain: wapu-core
@@ -63,7 +63,7 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 		 *
 		 * @var string
 		 */
-		private $version = '1.2.0';
+		private $version = '2.0.0';
 
 		/**
 		 * Core page trigger
@@ -71,6 +71,12 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 		 * @var boolean
 		 */
 		private $is_core_page = false;
+
+		/**
+		 * EDD-related instances
+		 * @var null
+		 */
+		public $edd = null;
 
 		/**
 		 * Holder for base plugin path
@@ -399,6 +405,18 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 			 * Init custom breadcrumbs
 			 */
 			wapu_core_custom_breadcrumbs()->init();
+
+			if ( class_exists( 'Easy_Digital_Downloads' ) ) {
+
+				require $this->plugin_path( 'includes/entities/class-wapu-core-edd-account.php' );
+				require $this->plugin_path( 'includes/entities/class-wapu-core-edd-settings.php' );
+
+				$this->edd = new stdClass();
+
+				$this->edd->settings = new Wapu_Core_EDD_Settings();
+				$this->edd->account  = new Wapu_Core_EDD_Account();
+
+			}
 		}
 
 		/**
