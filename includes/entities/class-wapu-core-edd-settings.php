@@ -63,6 +63,18 @@ if ( ! class_exists( 'Wapu_Core_EDD_Settings' ) ) {
 						'chosen'      => true,
 						'placeholder' => __( 'Select a page', 'wapu-core' ),
 					),
+					'wapu_core_mc_api_key' => array(
+						'id'   => 'wapu_core_mc_api_key',
+						'name' => __( 'MailChimp API Key', 'wapu-core' ),
+						'desc' => '',
+						'type' => 'text',
+					),
+					'wapu_core_mc_list_id' => array(
+						'id'   => 'wapu_core_mc_list_id',
+						'name' => __( 'MailChimp List ID', 'wapu-core' ),
+						'desc' => '',
+						'type' => 'text',
+					),
 				),
 			);
 			return $settings;

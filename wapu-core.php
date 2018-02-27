@@ -410,6 +410,7 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 
 				require $this->plugin_path( 'includes/entities/class-wapu-core-edd-account.php' );
 				require $this->plugin_path( 'includes/entities/class-wapu-core-edd-settings.php' );
+				require $this->plugin_path( 'includes/handlers/class-wapu-core-mailchimp.php' );
 
 				$this->edd = new stdClass();
 

@@ -21,9 +21,18 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 		 * Constructor for the class
 		 */
 		public function __construct() {
+
 			add_filter( 'template_include', array( $this, 'template_loader' ) );
 			add_action( 'wp_ajax_wapu_core_request_refund', array( $this, 'request_refund' ) );
 			add_filter('show_admin_bar', array( $this, 'disable_admin_bar' ) );
+
+			add_action( 'edd_profile_editor_after_password_fields', array( $this, 'subscription_settings' ) );
+			add_action( 'edd_user_profile_updated', array( $this, 'update_subscription' ) );
+
+			// Subscribe user on registration by default
+			add_action( 'user_register', array( $this, 'subscribe_user_on_register' ) );
+			//add_action( 'wp_enqueue_scripts', array( $this, 'subscribe_user_on_register' ) );
+
 		}
 
 		/**
@@ -37,6 +46,115 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 				return true;
 			} else {
 				return false;
+			}
+
+		}
+
+		/**
+		 * Update user subscription status
+		 *
+		 * @param  [type] $user_id [description]
+		 * @return [type]          [description]
+		 */
+		public function update_subscription( $user_id ) {
+
+			$current_status = get_user_meta( $user_id, '_wapu_core_subscription', true );
+			$new_status     = ! empty( $_POST['_wapu_core_subscription'] ) ? 'yes' : '';
+
+			if ( $new_status === $current_status ) {
+				return;
+			}
+
+			$api_key = edd_get_option( 'wapu_core_mc_api_key' );
+			$list_id = edd_get_option( 'wapu_core_mc_list_id' );
+
+			if ( ! $api_key || ! $list_id ) {
+				return;
+			}
+
+			$mailchimp = new Wapu_Core_MailChimp( $api_key, $list_id );
+			$user_data = get_userdata( $user_id );
+			$name      = ! empty( $user_data->first_name ) ? $user_data->first_name : $user_data->user_email;
+			$email     = $user_data->user_email;
+
+			if ( 'yes' === $new_status ) {
+
+				$subscribe = $mailchimp->change_status( $email, 'subscribed' );
+
+				if ( isset( $subscribe['status'] ) && 'subscribed' === $subscribe['status'] ) {
+					update_user_meta( $user_id, '_wapu_core_subscription', 'yes' );
+				} elseif ( isset( $subscribe['status'] ) && 404 === $subscribe['status'] ) {
+
+					$subscribe = $mailchimp->subscribe( array(
+						'email' => $email,
+						'fname' => $name,
+					) );
+
+					if ( isset( $subscribe['status'] ) && 'subscribed' === $subscribe['status'] ) {
+						update_user_meta( $user_id, '_wapu_core_subscription', 'yes' );
+					}
+				}
+
+			} else {
+				$unsubscribe = $mailchimp->change_status( $email, 'unsubscribed' );
+				delete_user_meta( $user_id, '_wapu_core_subscription' );
+			}
+
+		}
+
+		/**
+		 * Subscribtion settings
+		 *
+		 * @return void
+		 */
+		public function subscription_settings() {
+
+			$user_id = get_current_user_id();
+			$checked = get_user_meta( $user_id, '_wapu_core_subscription', true );
+
+			?>
+			<fieldset id="edd_profile_subscription">
+				<legend id="edd_profile_subscription_label"><?php
+					_e( 'Subscription', 'crocoblock-core' );
+				?></legend>
+				<label>
+					<input type="checkbox" name="_wapu_core_subscription" value="yes" <?php checked( $checked, 'yes', true ); ?>>
+					<?php _e( 'I agree for subscribtion to know about latest news', 'wapu-core' ); ?>
+				</label>
+			</fieldset>
+			<?php
+		}
+
+		/**
+		 * Subscribe user
+		 *
+		 * @return [type] [description]
+		 */
+		public function subscribe_user_on_register( $user_id = null ) {
+
+			//$user_id = get_current_user_id();
+
+			$user_data = get_userdata( $user_id );
+
+			$name  = ! empty( $user_data->first_name ) ? $user_data->first_name : $user_data->user_email;
+			$email = $user_data->user_email;
+
+			$api_key = edd_get_option( 'croco_mc_api_key' );
+			$list_id = edd_get_option( 'croco_mc_list_id' );
+
+			if ( ! $api_key || ! $list_id ) {
+				return;
+			}
+
+			$mailchimp = new Croco_MailChimp( $api_key, $list_id );
+
+			$subscribe = $mailchimp->subscribe( array(
+				'email' => $email,
+				'fname' => $name,
+			) );
+
+			if ( isset( $subscribe['status'] ) && 'subscribed' === $subscribe['status'] ) {
+				update_user_meta( $user_id, '_wapu_core_subscription', 'yes' );
 			}
 
 		}
