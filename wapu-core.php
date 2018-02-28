@@ -410,12 +410,16 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 
 				require $this->plugin_path( 'includes/entities/class-wapu-core-edd-account.php' );
 				require $this->plugin_path( 'includes/entities/class-wapu-core-edd-settings.php' );
+				require $this->plugin_path( 'includes/entities/class-wapu-core-edd-meta.php' );
+				require $this->plugin_path( 'includes/entities/class-wapu-core-edd-single-download.php' );
 				require $this->plugin_path( 'includes/handlers/class-wapu-core-mailchimp.php' );
 
 				$this->edd = new stdClass();
 
 				$this->edd->settings = new Wapu_Core_EDD_Settings();
 				$this->edd->account  = new Wapu_Core_EDD_Account();
+				$this->edd->meta     = new Wapu_Core_EDD_Meta();
+				$this->edd->single   = new Wapu_Core_EDD_Single_Download();
 
 			}
 		}
