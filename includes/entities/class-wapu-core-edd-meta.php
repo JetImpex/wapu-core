@@ -56,9 +56,24 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 				'priority'      => 'high',
 				'callback_args' => false,
 				'fields' => array(
-					'_wapu_single_large' => array(
+					'_wapu_single_large_thumb' => array(
 						'type'  => 'media',
 						'title' => esc_html__( 'Single Large Image', 'wapu-core' ),
+					),
+				),
+			) );
+
+			wapu_core()->get_core()->init_module( 'cherry-post-meta', array(
+				'id'            => 'wapu_misc',
+				'title'         => esc_html__( 'Misc Options', 'wapu-core' ),
+				'page'          => array( $this->post_type ),
+				'context'       => 'normal',
+				'priority'      => 'high',
+				'callback_args' => false,
+				'fields' => array(
+					'_wapu_ld_url' => array(
+						'type'  => 'text',
+						'title' => esc_html__( 'Live Demo URL', 'wapu-core' ),
 					),
 				),
 			) );
@@ -71,6 +86,39 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 		 * @return [type] [description]
 		 */
 		public function extend_default_metaboxes() {
+
+			add_action( 'edd_save_download', array( $this, 'save_default_fields' ), 10, 2 );;
+
+			add_action( 'edd_stats_meta_box', array( $this, 'add_fake_sales_input' ) );
+
+		}
+
+		public function add_fake_sales_input() {
+
+			global $post;
+			$sales = get_post_meta( $post->ID, '_fake_sales', true );
+			?>
+			<p class="product-sales-stats">
+				<span class="label">Add Fake Sales:</span>
+				<input type="number" name="_fake_sales" value="<?php echo $sales; ?>" class="small-text" style="margin: -5px 0 0 5px;">
+			</p>
+			<?php
+		}
+
+		/**
+		 * Save fields added to default metaboxes
+		 *
+		 * @param  [type] $post_id [description]
+		 * @param  [type] $post    [description]
+		 * @return [type]          [description]
+		 */
+		public function save_default_fields( $post_id, $post ) {
+
+			if ( ! empty( $_POST['_fake_sales'] ) ) {
+				update_post_meta( $post_id, '_fake_sales', absint( $_POST['_fake_sales'] ) );
+			} else {
+				delete_post_meta( $post_id, '_fake_sales' );
+			}
 
 		}
 

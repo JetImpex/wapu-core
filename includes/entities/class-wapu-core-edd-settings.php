@@ -45,6 +45,12 @@ if ( ! class_exists( 'Wapu_Core_EDD_Settings' ) ) {
 		public function register_settings( $settings ) {
 			$settings['wapu_core_settings'] = array(
 				'main' => array(
+					'wapu_pages_settings' => array(
+						'id'   => 'wapu_pages_settings',
+						'name' => '<h3>Pages</h3>',
+						'desc' => '',
+						'type' => 'header',
+					),
 					'wapu_core_account_page' => array(
 						'id'          => 'wapu_core_account_page',
 						'name'        => __( 'Account Page', 'wapu-core' ),
@@ -63,6 +69,12 @@ if ( ! class_exists( 'Wapu_Core_EDD_Settings' ) ) {
 						'chosen'      => true,
 						'placeholder' => __( 'Select a page', 'wapu-core' ),
 					),
+					'wapu_mc_settings' => array(
+						'id'   => 'wapu_mc_settings',
+						'name' => '<h3>MailChimp Integration</h3>',
+						'desc' => '',
+						'type' => 'header',
+					),
 					'wapu_core_mc_api_key' => array(
 						'id'   => 'wapu_core_mc_api_key',
 						'name' => __( 'MailChimp API Key', 'wapu-core' ),
@@ -75,6 +87,33 @@ if ( ! class_exists( 'Wapu_Core_EDD_Settings' ) ) {
 						'desc' => '',
 						'type' => 'text',
 					),
+					'wapu_single_settings' => array(
+						'id'   => 'wapu_single_settings',
+						'name' => '<h3>Single Page Settings</h3>',
+						'desc' => '',
+						'type' => 'header',
+					),
+					'wapu_price_title' => array(
+						'id'   => 'wapu_price_title',
+						'name' => 'Price Title',
+						'type' => 'text',
+					),
+					'wapu_price_tooltip' => array(
+						'id'   => 'wapu_price_tooltip',
+						'name' => 'Price Tooltip',
+						'type' => 'text',
+					),
+					'wapu_price_features' => array(
+						'id'   => 'wapu_price_features',
+						'name' => 'Price Features',
+						'desc' => 'Separate features with "|" sign',
+						'type' => 'textarea',
+					),
+					'wapu_price_notes' => array(
+						'id'   => 'wapu_price_notes',
+						'name' => 'Notes after Add to Cart button',
+						'type' => 'textarea',
+					)
 				),
 			);
 			return $settings;

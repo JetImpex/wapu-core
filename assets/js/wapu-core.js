@@ -14,6 +14,7 @@
 			popupOverlay: '.wapu-popup__overlay',
 			faqOpen: '.faq-post__title',
 			tabsNavItem: '.account-tabs__nav-item-link',
+			addToCart: '.download-add-to-cart',
 		},
 
 		objects: {
@@ -44,6 +45,7 @@
 				.on( 'click.wapuCore', wapuCore.css.docSearch, wapuCore.processDocSearch )
 				.on( 'click.wapuCore', wapuCore.css.faqOpen, wapuCore.openFaq )
 				.on( 'click.wapuCore', wapuCore.css.tabsNavItem, wapuCore.switchTabs )
+				.on( 'click.wapuCore', wapuCore.css.addToCart, wapuCore.addToCart )
 				.on( 'focus.wapuCore', wapuCore.css.docInput, wapuCore.removeError )
 				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.removeError )
 				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.openOnEnter )
@@ -51,6 +53,32 @@
 				.on( 'wapuCorePopupOpened', wapuCore.getVideo );
 
 			this.loadFirstTab();
+
+		},
+
+		addToCart: function( event ) {
+
+			event.preventDefault();
+
+			var $this      = $( this ),
+				downloadID = $this.data( 'download' );
+
+			$.ajax({
+				url: settings.ajaxurl,
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					action: 'edd_add_to_cart',
+					download_id: downloadID,
+					price_ids: [ downloadID ],
+					post_data: $.param( {
+						download_id: downloadID,
+						edd_action: 'add_to_cart',
+					} )
+				},
+			}).done( function( response ) {
+				console.log( response );
+			});
 
 		},
 
