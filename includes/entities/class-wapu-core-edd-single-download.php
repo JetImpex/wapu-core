@@ -19,7 +19,9 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 	 */
 	class Wapu_Core_EDD_Single_Download {
 
-		private $subpage = '';
+		private $subpage    = '';
+		private $taxes      = array();
+		public  $meta_cache = null;
 
 		/**
 		 * Constructor for the class
@@ -34,6 +36,30 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 
 			add_filter( 'edd_add_schema_microdata', '__return_false' );
 
+			add_action( 'wp_head', array( $this, 'set_single_post_data' ), 0 );
+
+		}
+
+		public function set_single_post_data() {
+
+			if ( ! is_singular( 'download' ) ) {
+				return;
+			}
+
+			add_filter( 'wapu_core/localize_data', array( $this, 'add_localized_data' ) );
+			$this->meta_cache = new Wapu_Core_Meta_Cache( get_the_ID() );
+
+		}
+
+		public function add_localized_data( $data ) {
+
+			$data['addToCart'] = array(
+				'processing'   => 'Processing...',
+				'added'        => 'Added To Cart',
+				'checkoutLink' => '<div class="to-checkout"><a href="' . edd_get_checkout_uri() . '">Go to Checkout</a></div>',
+			);
+
+			return $data;
 		}
 
 		/**
@@ -192,24 +218,45 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 					'class'  => 'button button-live-demo',
 					'icon'   => 'nc-icon-mini tech_desktop-screen',
 					'target' => '_blank',
+					'atts'   => array(),
 				),
 				array(
 					'url'    => '#',
 					'label'  => 'Add to Wishlist',
-					'class'  => 'button button-wish-list',
+					'class'  => 'button button-wish-list edd-wl-open-modal edd-wl-action',
 					'icon'   => 'nc-icon-mini ui-2_favourite-28',
 					'target' => '',
+					'atts'   => array(
+						'data-action'         => 'edd_wl_open_modal',
+						'data-download-id'    => get_the_ID(),
+						'data-variable-price' => 'no',
+						'data-price-mode'     => 'single',
+					),
 				),
 			);
 
+			if ( function_exists( 'edd_wl_add_to_list_shortcode' ) ) {
+				wp_enqueue_script( 'edd-wl' );
+				wp_enqueue_script( 'edd-wl-modal' );
+			}
+
 			foreach ( $actions as $action ) {
+
+				$atts     = ! empty( $action['atts'] ) ? $action['atts'] : array();
+				$atts_str = '';
+
+				array_walk( $action['atts'], function( $value, $attr ) use ( &$atts_str ) {
+					$atts_str .= sprintf( ' %1$s="%2$s"', $attr, $value );
+				} );
+
 				printf(
-					'<a href="%1$s" class="%3$s"%5$s>%4$s%2$s</a>',
+					'<a href="%1$s" class="%3$s"%5$s%6$s>%4$s%2$s</a>',
 					$action['url'],
 					$action['label'],
 					$action['class'],
 					( ! empty( $action['icon'] ) ) ? '<i class="' . $action['icon'] . '"></i>' : '',
-					( ! empty( $action['target'] ) ) ? ' target="' . $action['target'] . '"' : ''
+					( ! empty( $action['target'] ) ) ? ' target="' . $action['target'] . '"' : '',
+					$atts_str
 				);
 			}
 
@@ -217,6 +264,7 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 
 		/**
 		 * Price label
+		 *
 		 * @return [type] [description]
 		 */
 		public function price_label() {
@@ -236,7 +284,12 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 				$tooltip_html = '';
 			}
 
-			printf( '<div class="download-single-price__label">%1$s%2$s</div>', $label, $tooltip_html );
+			printf(
+				'<div class="download-single-price__label">
+					<div class="download-single-price__label-text">%1$s</div>%2$s
+				</div>',
+				$label, $tooltip_html
+			);
 
 		}
 
@@ -366,8 +419,14 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 				return;
 			}
 
+			if ( true === $this->meta_cache->get( '_rating_cache' ) ) {
+				return;
+			}
+
 			$rating      = edd_reviews()->average_rating( false );
 			$reviews_num = edd_reviews()->count_reviews();
+
+			ob_start();
 
 			echo '<div class="single-rating">';
 				echo '<div class="single-rating__heading">';
@@ -387,6 +446,64 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 				echo '</div>';
 			echo '</div>';
 
+			$content = ob_get_clean();
+			$this->meta_cache->update( '_rating_cache', $content );
+			echo $content;
+		}
+
+		public function add_tax( $tax, $name ) {
+			$this->taxes[ $tax ] = $name;
+		}
+
+		/**
+		 * Return available taxes list
+		 *
+		 * @return [type] [description]
+		 */
+		public function get_taxes_list() {
+			return $this->taxes;
+		}
+
+		/**
+		 * Returns tems list
+		 *
+		 * @return [type] [description]
+		 */
+		public function terms() {
+
+			if ( true === $this->meta_cache->get( '_terms_cache' ) ) {
+				return;
+			}
+
+			$taxes = $this->get_taxes_list();
+
+			ob_start();
+
+			foreach ( $taxes as $tax => $name ) {
+
+				$terms = wp_get_post_terms( get_the_ID(), $tax );
+
+				if ( empty( $terms ) ) {
+					continue;
+				}
+
+				echo '<div class="download-terms-row">';
+				printf( '<div class="download-terms-row__title">%s</div>', $name );
+				echo '<div class="download-terms-row__items">';
+				$items = array();
+				foreach ( $terms as $term ) {
+					$items[] = $term->name;
+				}
+				echo implode( ', ', $items );
+				echo '</div>';
+				echo '</div>';
+
+			}
+
+			$content = ob_get_clean();
+			$this->meta_cache->update( '_terms_cache', $content );
+
+			echo $content;
 
 		}
 
@@ -400,11 +517,11 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 
 			$max     = 5;
 			$width   = round( ( 100 * $value ) / $max, 3 );
-			$stars_f = str_repeat( '<i class="fa fa-star" aria-hidden="true"></i>', 5 );
-			$stars_e = str_repeat( '<i class="fa fa-star-o" aria-hidden="true"></i>', 5 );
+			$stars_f = str_repeat( '<i class="nc-icon-mini ui-2_favourite-31" aria-hidden="true"></i>', 5 );
+			$stars_e = str_repeat( '<i class="nc-icon-mini ui-2_favourite-31" aria-hidden="true"></i>', 5 );
 
 			return sprintf(
-				'<div class="jet-review__stars"><div class="jet-review__stars-filled" style="width:%1$s%%">%3$s</div><div class="jet-review__stars-empty" style="width:%2$s%%">%4$s</div><div class="jet-review__stars-adjuster">%4$s</div></div>',
+				'<div class="review__stars"><div class="review__stars-filled" style="width:%1$s%%">%3$s</div><div class="review__stars-empty" style="width:%2$s%%">%4$s</div><div class="review__stars-adjuster">%4$s</div></div>',
 				$width,
 				100 - $width,
 				$stars_f,

@@ -63,6 +63,8 @@
 			var $this      = $( this ),
 				downloadID = $this.data( 'download' );
 
+			$this.html( settings.addToCart.processing );
+
 			$.ajax({
 				url: settings.ajaxurl,
 				type: 'POST',
@@ -77,7 +79,8 @@
 					} )
 				},
 			}).done( function( response ) {
-				console.log( response );
+				$this.html( settings.addToCart.added );
+				$this.after( settings.addToCart.checkoutLink );
 			});
 
 		},

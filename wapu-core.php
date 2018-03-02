@@ -406,6 +406,8 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 			 */
 			wapu_core_custom_breadcrumbs()->init();
 
+			require $this->plugin_path( 'includes/handlers/class-wapu-core-meta-cache.php' );
+
 			if ( class_exists( 'Easy_Digital_Downloads' ) ) {
 
 				require $this->plugin_path( 'includes/entities/class-wapu-core-edd-account.php' );

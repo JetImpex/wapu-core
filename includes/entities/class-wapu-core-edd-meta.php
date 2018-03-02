@@ -40,6 +40,40 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 		public function __construct() {
 			$this->register_metaboxes();
 			$this->extend_default_metaboxes();
+			add_action( 'init', array( $this, 'register_taxes' ), 10 );
+		}
+
+		/**
+		 * Register taxonomies list
+		 *
+		 * @return [type] [description]
+		 */
+		public function register_taxes() {
+
+			$taxes = array(
+				'high-resolution'     => 'High Resolution',
+				'widget-ready'        => 'Widget Ready',
+				'compatible-browsers' => 'Compatible Browsers',
+				'compatible-with'     => 'Compatible With',
+				'software-version'    => 'Software Version',
+			);
+
+			foreach ( $taxes as $tax => $name ) {
+
+				register_taxonomy(
+					$tax,
+					$this->post_type,
+					array(
+						'label'  => $name,
+						'labels' => array(
+							'name' => $name,
+						),
+					)
+				);
+
+				wapu_core()->edd->single->add_tax( $tax, $name );
+			}
+
 		}
 
 		/**
