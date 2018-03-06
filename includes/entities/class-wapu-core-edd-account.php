@@ -33,6 +33,82 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 			add_action( 'user_register', array( $this, 'subscribe_user_on_register' ) );
 			//add_action( 'wp_enqueue_scripts', array( $this, 'subscribe_user_on_register' ) );
 
+			add_action( 'wapu_header_cart', array( $this, 'add_header_cart' ) );
+
+			add_action( 'wp_ajax_wapu_get_cart_content', array( $this, 'get_cart_contents' ) );
+			add_action( 'wp_ajax_nopriv_wapu_get_cart_content', array( $this, 'get_cart_contents' ) );
+
+			add_filter( 'edd_cart_item', array( $this, 'cart_elements' ), 10, 2 );
+
+		}
+
+		public function cart_elements( $item, $id ) {
+
+			$item = str_replace( '{item_url}', get_permalink( $id ), $item );
+			$item = str_replace( '{item_thumb}', get_the_post_thumbnail( $id, 'search-thumbnail' ), $item );
+
+			return $item;
+		}
+
+		/**
+		 * Returns cart content on ajax request
+		 *
+		 * @return [type] [description]
+		 */
+		public function get_cart_contents() {
+
+			$cart_items = edd_get_cart_contents();
+
+			ob_start();
+
+			?>
+			<div class="cart-title">
+				Your Cart Contains
+				<div class="cart-title__count"><?php echo edd_get_cart_quantity(); ?> Product(s)</div>
+			</div>
+			<ul class="edd-cart">
+			<?php if( $cart_items ) : ?>
+
+				<?php foreach( $cart_items as $key => $item ) : ?>
+
+					<?php echo edd_get_cart_item_template( $key, $item, true ); ?>
+
+				<?php endforeach; ?>
+
+				<?php edd_get_template_part( 'widget', 'cart-checkout' ); ?>
+
+			<?php else : ?>
+
+				<?php edd_get_template_part( 'widget', 'cart-empty' ); ?>
+
+			<?php endif; ?>
+			</ul>
+
+			<?php
+
+			$content = ob_get_clean();
+
+			wp_send_json_success( $content );
+		}
+
+		/**
+		 * Add header cart
+		 */
+		public function add_header_cart() {
+			include wapu_core()->get_template( 'entities/header-cart/cart-link.php' );
+			add_action( 'wp_footer', array( $this, 'add_cart_popups' ) );
+		}
+
+		/**
+		 * Render cart popups
+		 */
+		public function add_cart_popups() {
+
+			echo '<div class="cart-popups">';
+				include wapu_core()->get_template( 'entities/header-cart/account-popup.php' );
+				include wapu_core()->get_template( 'entities/header-cart/cart-popup.php' );
+				echo '<div class="cart-overlay"></div>';
+			echo '</div>';
 		}
 
 		/**
@@ -47,6 +123,69 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 			} else {
 				return false;
 			}
+
+		}
+
+		/**
+		 * Retrieve an account page URL
+		 *
+		 * @return [type] [description]
+		 */
+		public function get_account_page_url() {
+
+			global $edd_options;
+
+			$page_id = isset( $edd_options['wapu_core_account_page'] ) ? $edd_options['wapu_core_account_page'] : edd_get_option( 'wapu_core_account_page' );
+
+			if ( ! $page_id ) {
+				return '';
+			}
+
+			return get_page_link( $page_id );
+
+		}
+
+		/**
+		 * Render account menu list
+		 *
+		 * @return [type] [description]
+		 */
+		public function render_account_menu() {
+
+			$account_page = $this->get_account_page_url();
+
+			$menu = array(
+				array(
+					'label' => 'Account',
+					'url'   => $account_page,
+				),
+				array(
+					'label' => 'Orders',
+					'url'   => $account_page . '#purchase-details',
+				),
+				array(
+					'label' => 'Downloads',
+					'url'   => $account_page . '#downloads',
+				),
+			);
+
+			if ( function_exists( 'edd_wl_get_wish_list_uri' ) ) {
+				$menu[] = array(
+					'label' => 'Wish List',
+					'url'   => edd_wl_get_wish_list_uri(),
+				);
+			}
+
+			$menu_html = '';
+
+			foreach ( $menu as $menu_item ) {
+				$menu_html .= sprintf(
+					'<a class="account-menu__item" href="%1$s">%2$s</a>',
+					$menu_item['url'], $menu_item['label']
+				);
+			}
+
+			printf( '<div class="account-menu">%s</div>', $menu_html );
 
 		}
 

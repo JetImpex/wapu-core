@@ -15,6 +15,8 @@
 			faqOpen: '.faq-post__title',
 			tabsNavItem: '.account-tabs__nav-item-link',
 			addToCart: '.download-add-to-cart',
+			headerCart: '.header-cart__item',
+			headerCartClose: '.cart-close',
 		},
 
 		objects: {
@@ -46,13 +48,65 @@
 				.on( 'click.wapuCore', wapuCore.css.faqOpen, wapuCore.openFaq )
 				.on( 'click.wapuCore', wapuCore.css.tabsNavItem, wapuCore.switchTabs )
 				.on( 'click.wapuCore', wapuCore.css.addToCart, wapuCore.addToCart )
+				.on( 'click.wapuCore', wapuCore.css.headerCart, wapuCore.openCartPopup )
+				.on( 'click.wapuCore', wapuCore.css.headerCartClose, wapuCore.closeCartPopup )
 				.on( 'focus.wapuCore', wapuCore.css.docInput, wapuCore.removeError )
 				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.removeError )
 				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.openOnEnter )
 				.on( 'wapuCorePopupOpened', wapuCore.getTicketWidget )
-				.on( 'wapuCorePopupOpened', wapuCore.getVideo );
+				.on( 'wapuCorePopupOpened', wapuCore.getVideo )
+				.on( 'wapuCartPopupOpened', wapuCore.getCartContents );
 
 			this.loadFirstTab();
+
+		},
+
+		closeCartPopup: function( event ) {
+			event.preventDefault();
+			$( this ).closest( '.cart-popup' ).removeClass( 'cart-popup-active' );
+		},
+
+		openCartPopup: function( event ) {
+
+			event.preventDefault();
+
+			var $this         = $( this ),
+				$popups       = $( '.cart-popups' ),
+				popup         = $this.data( 'open' ),
+				$currentPopup = $popups.find( 'div[data-popup="' + popup + '"]' );
+
+			if ( $currentPopup.hasClass( 'cart-popup-active' ) ) {
+				$currentPopup.removeClass( 'cart-popup-active' );
+			} else {
+
+				$popups.find( '.cart-popup-active' ).removeClass( 'cart-popup-active' );
+				$currentPopup.addClass( 'cart-popup-active' );
+
+				$( document ).trigger( 'wapuCartPopupOpened', [ popup, $currentPopup ] );
+			}
+
+		},
+
+		getCartContents: function( event, slug, $el ) {
+
+			if ( 'cart' !== slug ) {
+				return;
+			}
+
+			if ( $el.hasClass( 'cart-loaded' ) ) {
+				return;
+			}
+
+			$.ajax({
+				url: settings.ajaxurl,
+				type: 'GET',
+				dataType: 'json',
+				data: {
+					action: 'wapu_get_cart_content'
+				},
+			}).done( function( response ) {
+				$el.addClass( 'cart-loaded' ).find( '.cart-content' ).html( response.data );
+			});
 
 		},
 

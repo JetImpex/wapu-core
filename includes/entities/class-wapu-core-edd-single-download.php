@@ -37,7 +37,16 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 			add_filter( 'edd_add_schema_microdata', '__return_false' );
 
 			add_action( 'wp_head', array( $this, 'set_single_post_data' ), 0 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_wishlist_css' ), 101 );
 
+		}
+
+		/**
+		 * Dequeue wishlist CSS
+		 * @return [type] [description]
+		 */
+		public function dequeue_wishlist_css() {
+			wp_dequeue_style( 'edd-wl-styles' );
 		}
 
 		public function set_single_post_data() {
@@ -211,6 +220,33 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 		 */
 		public function actions() {
 
+			$download_id = get_the_ID();
+
+			if ( ! function_exists( 'edd_wl_item_in_wish_list' ) ) {
+				$in_wishlist = false;
+			} else {
+				$in_wishlist = edd_wl_item_in_wish_list( $download_id );
+			}
+
+			if ( ! empty( $in_wishlist ) ) {
+				$wl_url   = edd_wl_get_wish_list_uri();
+				$wl_label = 'In Wishlist';
+				$wl_class = 'button button-wish-list';
+				$wl_icon  = 'nc-icon-mini ui-1_check';
+				$wl_atts  = array();
+			} else {
+				$wl_url   = '#';
+				$wl_label = 'Add to Wishlist';
+				$wl_class = 'button button-wish-list edd-wl-open-modal edd-wl-action';
+				$wl_icon  = 'nc-icon-mini tech_desktop-screen';
+				$wl_atts  = array(
+					'data-action'         => 'edd_wl_open_modal',
+					'data-download-id'    => $download_id,
+					'data-variable-price' => 'no',
+					'data-price-mode'     => 'single',
+				);
+			}
+
 			$actions = array(
 				array(
 					'url'    => $this->get_live_demo_url(),
@@ -221,17 +257,12 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 					'atts'   => array(),
 				),
 				array(
-					'url'    => '#',
-					'label'  => 'Add to Wishlist',
-					'class'  => 'button button-wish-list edd-wl-open-modal edd-wl-action',
-					'icon'   => 'nc-icon-mini ui-2_favourite-28',
+					'url'    => $wl_url,
+					'label'  => $wl_label,
+					'class'  => $wl_class,
+					'icon'   => $wl_icon,
 					'target' => '',
-					'atts'   => array(
-						'data-action'         => 'edd_wl_open_modal',
-						'data-download-id'    => get_the_ID(),
-						'data-variable-price' => 'no',
-						'data-price-mode'     => 'single',
-					),
+					'atts'   => $wl_atts,
 				),
 			);
 
@@ -250,7 +281,7 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 				} );
 
 				printf(
-					'<a href="%1$s" class="%3$s"%5$s%6$s>%4$s%2$s</a>',
+					'<a href="%1$s" class="%3$s"%5$s%6$s>%4$s<span class="action-inner">%2$s</span></a>',
 					$action['url'],
 					$action['label'],
 					$action['class'],
