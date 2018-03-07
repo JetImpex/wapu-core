@@ -95,6 +95,7 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 		 * Add header cart
 		 */
 		public function add_header_cart() {
+			wp_enqueue_script( 'wapu-core' );
 			include wapu_core()->get_template( 'entities/header-cart/cart-link.php' );
 			add_action( 'wp_footer', array( $this, 'add_cart_popups' ) );
 		}

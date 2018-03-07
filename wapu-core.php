@@ -407,6 +407,7 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 			wapu_core_custom_breadcrumbs()->init();
 
 			require $this->plugin_path( 'includes/handlers/class-wapu-core-meta-cache.php' );
+			require $this->plugin_path( 'includes/api/class-wapu-core-api-manager.php' );
 
 			if ( class_exists( 'Easy_Digital_Downloads' ) ) {
 
@@ -424,6 +425,8 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 				$this->edd->single   = new Wapu_Core_EDD_Single_Download();
 
 			}
+
+			wapu_core_api_manager()->init();
 		}
 
 		/**
@@ -542,6 +545,12 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 		 */
 		public function register_assets() {
 
+			if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+				$prefix = '';
+			} else {
+				$prefix = '.min';
+			}
+
 			wp_register_script(
 				'wapu-core',
 				$this->plugin_url( 'assets/js/wapu-core.js' ),
@@ -558,8 +567,23 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 				true
 			);
 
+			wp_register_script(
+				'vue',
+				$this->plugin_url( 'assets/js/vendor/vue' . $prefix . '.js' ),
+				array(),
+				'2.5.13',
+				true
+			);
+
 			$data = apply_filters( 'wapu_core/localize_data', array(
 				'ajaxurl' => esc_url( admin_url( 'admin-ajax.php' ) ),
+				'api'     => array(
+					'uri'       => is_multisite() ? network_home_url( '/wp-json/' ) : home_url( '/wp-json/' ),
+					'endpoints' => array(
+						'themes' => 'wapu/v1/themes/',
+						'cart'   => 'wapu/v1/cart/',
+					),
+				)
 			) );
 
 			wp_localize_script( 'wapu-core', 'wapuCoreSettings', $data );

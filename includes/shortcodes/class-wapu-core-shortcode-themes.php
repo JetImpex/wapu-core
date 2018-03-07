@@ -3,7 +3,7 @@
  * Row shortcode
  */
 
-class Wapu_Core_Tuts_Shortcode extends Wapu_Core_Shortcode {
+class Wapu_Core_Themes_Shortcode extends Wapu_Core_Shortcode {
 
 	/**
 	 * Init shortcode properties
@@ -27,8 +27,18 @@ class Wapu_Core_Tuts_Shortcode extends Wapu_Core_Shortcode {
 		$this->args = array(
 			'category' => array(
 				'type'  => 'text',
-				'title' => esc_html__( 'Category', 'wapu-core' ),
+				'title' => esc_html__( 'Category Slug', 'wapu-core' ),
 				'value' => '',
+			),
+			'per_page' => array(
+				'type'  => 'text',
+				'title' => esc_html__( 'Per Page', 'wapu-core' ),
+				'value' => 6,
+			),
+			'thumb_size' => array(
+				'type'  => 'text',
+				'title' => esc_html__( 'Thumb Size', 'wapu-core' ),
+				'value' => 'theme-thumbnail',
 			),
 			'class' => array(
 				'type'  => 'text',
@@ -52,10 +62,22 @@ class Wapu_Core_Tuts_Shortcode extends Wapu_Core_Shortcode {
 
 		ob_start();
 
-		$class = ! empty( $atts['class'] ) ? esc_attr( $atts['class'] ) : false;
-		$id    = ! empty( $atts['id'] ) ? sprintf( ' id="%s"', esc_attr( $atts['id'] ) ) : '';
+		$class      = ! empty( $atts['class'] ) ? esc_attr( $atts['class'] ) : false;
+		$id         = ! empty( $atts['id'] ) ? sprintf( ' id="%s"', esc_attr( $atts['id'] ) ) : '';
+		$per_page   = ! empty( $atts['per_page'] ) ? absint( $atts['per_page'] ) : 6;
+		$thumb_size = ! empty( $atts['thumb_size'] ) ? esc_attr( $atts['thumb_size'] ) : 'theme-thumbnail';
+		$category   = ! empty( $atts['category'] ) ? esc_attr( $atts['category'] ) : '';
 
-		// TODO: handle themes list
+		$query_args = array(
+			'category'   => $category,
+			'per_page'   => $per_page,
+			'thumb_size' => $thumb_size
+		);
+
+		wp_enqueue_script( 'vue' );
+		wp_enqueue_script( 'wapu-core' );
+
+		include $this->get_template( 'content.php' );
 
 		return ob_get_clean();
 	}
@@ -71,4 +93,4 @@ class Wapu_Core_Tuts_Shortcode extends Wapu_Core_Shortcode {
 
 }
 
-wapu_core()->init_shortcode( 'Wapu_Core_Tuts_Shortcode' );
+wapu_core()->init_shortcode( 'Wapu_Core_Themes_Shortcode' );

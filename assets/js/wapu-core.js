@@ -422,4 +422,67 @@
 
 	wapuCore.init();
 
+	var $themesListing = $( '#themes-listing' ),
+		queryData      = $themesListing.data( 'query' );
+
+	console.log( queryData );
+
+	if ( $themesListing.length ) {
+		new Vue({
+			el: '#themes-listing',
+			data: {
+				page: 1,
+				pages: 1,
+				loaded: false,
+				posts: [],
+				showCartPopup: false,
+				showWishlistPopup: false
+			},
+			methods: {
+				salesLabel: function( sales ) {
+					if ( 1 == sales ) {
+						return ' sale';
+					} else {
+						return ' sales';
+					}
+				},
+				addToCart: function( id ) {
+					this.showCartPopup = true;
+				},
+				addToWishlist: function( id ) {
+					this.showWishlistPopup = true;
+				},
+				closePopups: function() {
+					this.showCartPopup = false;
+					this.showWishlistPopup = false;
+				}
+			},
+			mounted: function() {
+
+				var self = this;
+
+				$.ajax({
+					url: settings.api.uri + settings.api.endpoints.themes,
+					type: 'GET',
+					dataType: 'json',
+					data: {
+						per_page: queryData.per_page,
+						category: queryData.category,
+						thumb_size: queryData.thumb_size
+					},
+				}).done( function( response ) {
+
+					self.loaded = true;
+					self.page   = response.page;
+					self.pages  = response.pages;
+
+					response.themes.forEach( function( item ) {
+						self.posts.push( item );
+					} );
+
+				} );
+			}
+		});
+	}
+
 }( jQuery, window.wapuCoreSettings ) );

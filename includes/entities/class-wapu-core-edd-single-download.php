@@ -352,10 +352,15 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 		 *
 		 * @return [type] [description]
 		 */
-		public function sales( $format = '%s' ) {
-			global $post;
-			$sales      = edd_get_download_sales_stats( $post->ID );
-			$fake_sales = get_post_meta( $post->ID, '_fake_sales', true );
+		public function sales( $format = '%s', $post_id = null ) {
+
+			if ( ! $post_id ) {
+				global $post;
+				$post_id = $post->ID;
+			}
+
+			$sales      = edd_get_download_sales_stats( $post_id );
+			$fake_sales = get_post_meta( $post_id, '_fake_sales', true );
 
 			if ( $fake_sales ) {
 				$sales = absint( $sales ) + absint( $fake_sales );
@@ -389,8 +394,11 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 		 *
 		 * @return string
 		 */
-		public function get_live_demo_url() {
-			return get_post_meta( get_the_ID(), '_wapu_ld_url', true );
+		public function get_live_demo_url( $post_id = null ) {
+			if ( ! $post_id ) {
+				$post_id = get_the_ID();
+			}
+			return get_post_meta( $post_id, '_wapu_ld_url', true );
 		}
 
 		/**
