@@ -425,8 +425,6 @@
 	var $themesListing = $( '#themes-listing' ),
 		queryData      = $themesListing.data( 'query' );
 
-	console.log( queryData );
-
 	if ( $themesListing.length ) {
 		new Vue({
 			el: '#themes-listing',
@@ -436,7 +434,11 @@
 				loaded: false,
 				posts: [],
 				showCartPopup: false,
-				showWishlistPopup: false
+				showWishlistPopup: false,
+				cart: null,
+				addedToCart: false,
+				checkoutURL: '',
+				cartLabel: 'Add to Cart'
 			},
 			methods: {
 				salesLabel: function( sales ) {
@@ -446,15 +448,41 @@
 						return ' sales';
 					}
 				},
-				addToCart: function( id ) {
+				addToCart: function( post ) {
+					this.cart          = post;
 					this.showCartPopup = true;
 				},
-				addToWishlist: function( id ) {
+				addToWishlist: function( post ) {
 					this.showWishlistPopup = true;
 				},
 				closePopups: function() {
-					this.showCartPopup = false;
+					this.showCartPopup     = false;
 					this.showWishlistPopup = false;
+					this.addedToCart       = false;
+					this.cartLabel         = 'Add to Cart';
+				},
+				processAddToCart: function( id ) {
+
+					var self = this;
+
+					this.cartLabel = 'Adding...';
+
+					$.ajax({
+						url: settings.api.uri + settings.api.endpoints.addToCart,
+						type: 'GET',
+						dataType: 'json',
+						data: {
+							theme: id
+						},
+					}).done( function( response ) {
+						if ( response.count ) {
+							self.checkoutURL = response.checkout;
+							self.addedToCart = true;
+						} else {
+							this.cartLabel = 'Error. Please try again later';
+						}
+					} );
+
 				}
 			},
 			mounted: function() {

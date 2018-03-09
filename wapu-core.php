@@ -580,8 +580,9 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 				'api'     => array(
 					'uri'       => is_multisite() ? network_home_url( '/wp-json/' ) : home_url( '/wp-json/' ),
 					'endpoints' => array(
-						'themes' => 'wapu/v1/themes/',
-						'cart'   => 'wapu/v1/cart/',
+						'themes'    => 'wapu/v1/themes/',
+						'cart'      => 'wapu/v1/cart/',
+						'addToCart' => 'wapu/v1/add-to-cart/',
 					),
 				)
 			) );

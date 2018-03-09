@@ -31,10 +31,10 @@
 							</div>
 						</div>
 						<div class="themes-listing__item-actions">
-							<button class="themes-listing__item-wishlist" @click="addToWishlist( post.id )">
+							<button class="themes-listing__item-wishlist" @click="addToWishlist( post )">
 								<i class="nc-icon-mini ui-2_favourite-28"></i>
 							</button>
-							<button class="themes-listing__item-add-to-cart" @click="addToCart( post.id )">
+							<button class="themes-listing__item-add-to-cart" @click="addToCart( post )">
 								<i class="nc-icon-mini shopping_cart-simple"></i>
 							</button>
 						</div>
@@ -43,12 +43,41 @@
 			</div>
 		</div>
 	</div>
-	<div v-if="showCartPopup" class="add-to-cart-popup listing-popup">
-		<div class="listing-popup__content"></div>
-		<div class="listing-popup__close" @click="closePopups"><i class="nc-icon-mini ui-1_simple-remove"></i></div>
+	<div v-if="showCartPopup" :class="[ 'wapu-popup' ]">
+		<div class="wapu-popup__overlay" @click="closePopups"></div>
+		<div class="wapu-popup__content">
+			<div class="listing-cart">
+				<div class="listing-cart__item">
+					<img class="listing-cart__thumb":src="cart.thumb">
+					<div class="listing-cart__content">
+						<div class="listing-cart__title">
+							<a :href="cart.url">{{ cart.title }}</a>
+						</div>
+						<div v-if="cart.sale_price" class="listing-cart__price">
+							<del v-html="cart.price"></del>
+							<ins v-html="cart.sale_price"></ins>
+						</div>
+						<div v-else class="listing-cart__price" v-html="cart.price"></div>
+					</div>
+				</div>
+				<div class="listing-cart__actions">
+					<button class="listing-cart__cancel" @click="closePopups">Cancel</button>
+					<div v-if="!addedToCart">
+						<button class="listing-cart__submit" @click="processAddToCart( cart.id )">
+							{{ cartLabel }}
+						</button>
+					</div>
+					<div v-else>
+						<a class="listing-cart__cancel" :href="checkoutURL">Go To Checkout</a>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div v-if="showWishlistPopup" class="wishlist-popup listing-popup">
-		<div class="listing-popup__content"></div>
+	<div v-if="showWishlistPopup" :class="[ 'wapu-popup' ]">
+		<div class="wapu-popup__overlay"></div>
+		<div class="wapu-popup__content">
+		</div>
 		<div class="listing-popup__close" @click="closePopups"><i class="nc-icon-mini ui-1_simple-remove"></i></div>
 	</div>
 </div>
