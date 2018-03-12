@@ -37,10 +37,14 @@ if ( ! class_exists( 'Wapu_Core_API_Manager' ) ) {
 
 		public function register_endpoints() {
 
+			$endpoints = wapu_core()->plugin_path( 'includes/api/endpoints/' );
+
 			$endpoints = array(
-				'Wapu_Core_API_Themes'      => wapu_core()->plugin_path( 'includes/api/endpoints/themes.php' ),
-				'Wapu_Core_API_Cart'        => wapu_core()->plugin_path( 'includes/api/endpoints/cart.php' ),
-				'Wapu_Core_API_Add_To_Cart' => wapu_core()->plugin_path( 'includes/api/endpoints/add-to-cart.php' ),
+				'Wapu_Core_API_Themes'             => $endpoints . 'themes.php',
+				'Wapu_Core_API_Cart'               => $endpoints . 'cart.php',
+				'Wapu_Core_API_Add_To_Cart'        => $endpoints . 'add-to-cart.php',
+				'Wapu_Core_API_Wishlist_Get_Modal' => $endpoints . 'wishlist-get-modal.php',
+				'Wapu_Core_API_Wishlist_Add'       => $endpoints . 'wishlist-add.php',
 			);
 
 			foreach ( $endpoints as $class => $file ) {

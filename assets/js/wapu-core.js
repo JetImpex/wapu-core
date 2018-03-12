@@ -438,7 +438,10 @@
 				cart: null,
 				addedToCart: false,
 				checkoutURL: '',
-				cartLabel: 'Add to Cart'
+				cartLabel: 'Add to Cart',
+				wishListLoaded: false,
+				wishListContent: '',
+				wishlistData: {},
 			},
 			methods: {
 				salesLabel: function( sales ) {
@@ -453,13 +456,33 @@
 					this.showCartPopup = true;
 				},
 				addToWishlist: function( post ) {
-					this.showWishlistPopup = true;
+
+					var self = this;
+
+					self.showWishlistPopup = true;
+					self.cart              = post;
+
+					$.ajax({
+						url: settings.api.uri + settings.api.endpoints.getWishListModal,
+						type: 'GET',
+						dataType: 'json',
+						data: {
+							theme: post.id
+						},
+					}).done( function( response ) {
+						self.wishListContent = response.lists;
+						self.wishListLoaded  = true;
+					} );
 				},
 				closePopups: function() {
 					this.showCartPopup     = false;
 					this.showWishlistPopup = false;
 					this.addedToCart       = false;
 					this.cartLabel         = 'Add to Cart';
+					this.wishListLoaded    = false;
+					this.wishListContent   = '';
+					this.wishlistData      = {};
+					this.cart              = null;
 				},
 				processAddToCart: function( id ) {
 
@@ -509,6 +532,35 @@
 					} );
 
 				} );
+
+				$( self.$el ).on( 'click', '.edd-wl-save', function( event ) {
+
+					event.preventDefault();
+
+					var $form = $( this ).closest( '.listing-wl' ),
+						data  = {
+							download_id: self.cart.id,
+							price_ids: [ self.cart.id ],
+							new_or_existing: $form.find( 'input[name="list-options"]:checked' ).val(),
+							list_name: $form.find( 'input[name="list-name"]' ).val(),
+							list_status: $form.find( 'select[name="list-status"] option:selected' ).val(),
+						};
+
+					if ( $form.find( 'select[name="user-lists"]' ).length ) {
+						data.list_id = $form.find( 'select[name="user-lists"] option:selected' ).val();
+					}
+
+					$.ajax({
+						url: settings.api.uri + settings.api.endpoints.addToWishlist,
+						type: 'GET',
+						dataType: 'json',
+						data: data,
+					}).done( function( response ) {
+						self.wishListContent = response.result;
+					} );
+
+				} );
+
 			}
 		});
 	}

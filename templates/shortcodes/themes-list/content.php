@@ -43,7 +43,7 @@
 			</div>
 		</div>
 	</div>
-	<div v-if="showCartPopup" :class="[ 'wapu-popup' ]">
+	<div v-if="showCartPopup" :class="[ 'wapu-popup', 'listing-popup' ]">
 		<div class="wapu-popup__overlay" @click="closePopups"></div>
 		<div class="wapu-popup__content">
 			<div class="listing-cart">
@@ -74,10 +74,13 @@
 			</div>
 		</div>
 	</div>
-	<div v-if="showWishlistPopup" :class="[ 'wapu-popup' ]">
-		<div class="wapu-popup__overlay"></div>
+	<div v-if="showWishlistPopup" :class="[ 'wapu-popup', 'listing-popup' ]">
+		<div class="wapu-popup__overlay" @click="closePopups"></div>
 		<div class="wapu-popup__content">
+			<div v-if="!wishListLoaded" class="listing-wl-loading">
+				Loading
+			</div>
+			<div v-else class="listing-wl" v-html="wishListContent"></div>
 		</div>
-		<div class="listing-popup__close" @click="closePopups"><i class="nc-icon-mini ui-1_simple-remove"></i></div>
 	</div>
 </div>
