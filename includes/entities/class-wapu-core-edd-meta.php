@@ -51,6 +51,7 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 		public function register_taxes() {
 
 			$taxes = array(
+				'topic'               => 'Topic',
 				'high-resolution'     => 'High Resolution',
 				'widget-ready'        => 'Widget Ready',
 				'compatible-browsers' => 'Compatible Browsers',
@@ -108,6 +109,17 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 					'_wapu_ld_url' => array(
 						'type'  => 'text',
 						'title' => esc_html__( 'Live Demo URL', 'wapu-core' ),
+					),
+				),
+			) );
+
+			wapu_core()->get_core()->init_module( 'cherry-term-meta', array(
+				'tax'      => 'download_category',
+				'priority' => 10,
+				'fields'   => array(
+					'_wapu_category_home' => array(
+						'type'  => 'text',
+						'label' => 'Home URL for current category (for breadcrumbs)',
 					),
 				),
 			) );

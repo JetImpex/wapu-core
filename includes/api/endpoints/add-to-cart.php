@@ -43,25 +43,23 @@ if ( ! class_exists( 'Wapu_Core_API_Add_To_Cart' ) ) {
 			$theme = get_post( $theme );
 
 			if ( ! $theme || 'download' !== $theme->post_type ) {
-				return new WP_REST_Response(
-					array(
+				return array(
+					'response' => array(
 						'message' => 'Theme ID not provided',
 					),
-					400
+					'code' => 400
 				);
 			}
 
 			$count = edd_add_to_cart( $theme->ID );
 
-			return new WP_REST_Response(
-				array(
+			return array(
+				'response' => array(
 					'count'    => $count,
 					'checkout' => edd_get_checkout_uri(),
 				),
-				200
+				'code' => 200,
 			);
-
-
 
 		}
 

@@ -11,10 +11,6 @@
 	<a href="#" class="header-cart__item header-cart-link"  data-open="cart">
 		<i class="nc-icon-mini shopping_cart-simple"></i>
 		Cart
-		<span class="header-cart__count"><?php
-			if ( function_exists( 'edd_get_cart_quantity' ) ) {
-				echo edd_get_cart_quantity();
-			}
-		?></span>
+		<span class="header-cart__count">0</span>
 	</a>
 </div>

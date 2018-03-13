@@ -30,11 +30,11 @@ if ( ! class_exists( 'Wapu_Core_API_Wishlist_Add' ) ) {
 		public function callback( $params ) {
 
 			if ( ! function_exists( 'edd_wl_get_wish_lists' ) ) {
-				return new WP_REST_Response(
-					array(
+				return array(
+					'response' => array(
 						'message' => 'Wish Lists not enabled',
 					),
-					400
+					'code' => 400
 				);
 			}
 
@@ -46,11 +46,11 @@ if ( ! class_exists( 'Wapu_Core_API_Wishlist_Add' ) ) {
 			$list_id         = $params->get_param( 'list_id' );
 
 			if ( ! $download_id ) {
-				return new WP_REST_Response(
-					array(
+				return array(
+					'response' => array(
 						'message' => 'Theme ID not provided',
 					),
-					400
+					'code' => 400,
 				);
 			}
 
@@ -106,11 +106,11 @@ if ( ! class_exists( 'Wapu_Core_API_Wishlist_Add' ) ) {
 				'<a href="' . $url . '">' . $title . '</a>'
 			);
 
-			return new WP_REST_Response(
-				array(
+			return array(
+				'response' => array(
 					'result' => $result,
 				),
-				200
+				'code' => 200,
 			);
 
 		}

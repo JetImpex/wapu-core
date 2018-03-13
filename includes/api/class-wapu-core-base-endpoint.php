@@ -23,7 +23,21 @@ if ( ! class_exists( 'Wapu_Core_Base_Endpoint' ) ) {
 		 * Constructor for the class
 		 */
 		function __construct() {
-			add_action( 'rest_api_init', array( $this, 'add_endpoint' ) );
+			if ( ! $this->is_ajax() ) {
+				add_action( 'rest_api_init', array( $this, 'add_endpoint' ) );
+			} else {
+				add_action( 'wp_ajax_' . $this->route(), array( $this, '_callback' ) );
+				add_action( 'wp_ajax_nopriv_' . $this->route(), array( $this, '_callback' ) );
+			}
+		}
+
+		/**
+		 * Check if is AJAX endpoint
+		 *
+		 * @return boolean
+		 */
+		public function is_ajax() {
+			return false;
 		}
 
 		/**
@@ -62,6 +76,19 @@ if ( ! class_exists( 'Wapu_Core_Base_Endpoint' ) ) {
 		 */
 		abstract function callback( $params );
 
+		public function _callback( $params ) {
+
+			$result      = $this->callback( $params );
+			$response    = isset( $result['response'] ) ? $result['response'] : '';
+			$status_code = isset( $result['code'] ) ? $result['code'] : 400;
+
+			if ( $this->is_ajax() ) {
+				wp_send_json( $response, $status_code );
+			} else {
+				return new WP_REST_Response( $response, $status_code );
+			}
+		}
+
 		/**
 		 * Add API endpoint
 		 */
@@ -71,7 +98,7 @@ if ( ! class_exists( 'Wapu_Core_Base_Endpoint' ) ) {
 				$this->route(),
 				array(
 					'methods'  => $this->methods(),
-					'callback' => array( $this, 'callback' ),
+					'callback' => array( $this, '_callback' ),
 				)
 			);
 		}

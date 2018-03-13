@@ -57,9 +57,9 @@ if ( ! class_exists( 'Wapu_Core_API_Themes' ) ) {
 			);
 
 			if ( ! $query->have_posts() ) {
-				return new WP_REST_Response(
-					$data,
-					200
+				return array(
+					'response' => $data,
+					'code'     => 200,
 				);
 			}
 
@@ -91,6 +91,9 @@ if ( ! class_exists( 'Wapu_Core_API_Themes' ) ) {
 					$sale_price = edd_currency_filter( edd_format_amount( $sale_price ) );
 				}
 
+				$terms       = wp_get_post_terms( $post->ID, 'topic' );
+				$terms_names = wp_list_pluck( $terms, 'name' );
+
 				$current_post = array(
 					'id'         => $post->ID,
 					'title'      => $post->post_title,
@@ -101,6 +104,7 @@ if ( ! class_exists( 'Wapu_Core_API_Themes' ) ) {
 					'sale_price' => $sale_price,
 					'sales'      => $sales,
 					'rating'     => $rating,
+					'topics'     => $terms_names,
 				);
 
 				$posts[] = $current_post;
@@ -108,9 +112,9 @@ if ( ! class_exists( 'Wapu_Core_API_Themes' ) ) {
 
 			$data['themes'] = $posts;
 
-			return new WP_REST_Response(
-				$data,
-				200
+			return array(
+				'response' => $data,
+				'code'     => 200,
 			);
 
 		}

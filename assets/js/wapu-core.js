@@ -54,10 +54,35 @@
 				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.removeError )
 				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.openOnEnter )
 				.on( 'wapuCorePopupOpened', wapuCore.getTicketWidget )
-				.on( 'wapuCorePopupOpened', wapuCore.getVideo )
-				.on( 'wapuCartPopupOpened', wapuCore.getCartContents );
+				.on( 'wapuCorePopupOpened', wapuCore.getVideo );
 
 			this.loadFirstTab();
+			this.loadCartData();
+
+		},
+
+		loadCartData: function() {
+
+			var $headerCart = $( '.header-cart' );
+
+			if ( ! $headerCart.length ) {
+				return;
+			}
+
+			$.ajax({
+				url: settings.api.ajaxUri,
+				type: 'GET',
+				dataType: 'json',
+				data: {
+					action: settings.api.endpoints.cart
+				},
+			}).done( function( response ) {
+
+				$headerCart.find( '.header-cart__count' ).html( response.count );
+				$( '.cart-popup[data-popup="account"]' ).prepend( response.account );
+				$( '.cart-popup[data-popup="cart"] .cart-content' ).html( response.contents );
+
+			} );
 
 		},
 

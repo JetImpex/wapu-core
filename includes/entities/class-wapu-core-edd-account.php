@@ -35,8 +35,8 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 
 			add_action( 'wapu_header_cart', array( $this, 'add_header_cart' ) );
 
-			add_action( 'wp_ajax_wapu_get_cart_content', array( $this, 'get_cart_contents' ) );
-			add_action( 'wp_ajax_nopriv_wapu_get_cart_content', array( $this, 'get_cart_contents' ) );
+			add_action( 'wp_ajax_wapu_get_cart_content', array( $this, 'ajax_cart_contents' ) );
+			add_action( 'wp_ajax_nopriv_wapu_get_cart_content', array( $this, 'ajax_cart_contents' ) );
 
 			add_filter( 'edd_cart_item', array( $this, 'cart_elements' ), 10, 2 );
 
@@ -86,9 +86,12 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 
 			<?php
 
-			$content = ob_get_clean();
+			return ob_get_clean();
 
-			wp_send_json_success( $content );
+		}
+
+		public function ajax_cart_contents() {
+			wp_send_json_success( $this->get_cart_contents() );
 		}
 
 		/**

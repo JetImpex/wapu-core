@@ -39,6 +39,46 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 			add_action( 'wp_head', array( $this, 'set_single_post_data' ), 0 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_wishlist_css' ), 101 );
 
+			add_filter( 'cherry_breadcrumbs_items', array( $this, 'remove_download_from_trail' ) );
+
+		}
+
+		/**
+		 * Remove downloads archive link from trail
+		 *
+		 * @return array
+		 */
+		public function remove_download_from_trail( $items ) {
+
+			if ( ! is_singular( 'download' ) ) {
+				return $items;
+			}
+
+			$download_id = get_the_ID();
+			$category    = wp_get_post_terms( $download_id, 'download_category' );
+
+			if ( empty( $category ) ) {
+				unset( $items[1] );
+				return $items;
+			}
+
+			$cat_id   = $category[0]->term_id;
+			$cat_name = $category[0]->name;
+			$cat_url  = get_term_meta( $cat_id, '_wapu_category_home', true );
+
+			if ( ! $cat_url ) {
+				unset( $items[1] );
+				return $items;
+			}
+
+			$items[1] = sprintf(
+				'<div class="breadcrumbs__item"><a href="%1$s" class="breadcrumbs__item-link" rel="tag" title="%2$s">%2$s</a></div>',
+				$cat_url,
+				$cat_name
+			);
+
+			return $items;
+
 		}
 
 		/**
@@ -86,6 +126,12 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 			$subpage = $this->get_subpage();
 
 			if ( ! $subpage ) {
+				return $title;
+			}
+
+			global $post;
+
+			if ( $post->post_title != $title ) {
 				return $title;
 			}
 
@@ -458,12 +504,22 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 				return;
 			}
 
+			$reviews_num = edd_reviews()->count_reviews();
+
+			if ( ! $reviews_num ) {
+				echo '<div class="single-rating">';
+					echo '<div class="single-rating__no-reviews">';
+						echo 'There are no reviews yet.';
+					echo '</div>';
+				echo '</div>';
+				return;
+			}
+
 			if ( true === $this->meta_cache->get( '_rating_cache' ) ) {
 				return;
 			}
 
-			$rating      = edd_reviews()->average_rating( false );
-			$reviews_num = edd_reviews()->count_reviews();
+			$rating = edd_reviews()->average_rating( false );
 
 			ob_start();
 

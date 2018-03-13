@@ -579,9 +579,10 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 				'ajaxurl' => esc_url( admin_url( 'admin-ajax.php' ) ),
 				'api'     => array(
 					'uri'       => is_multisite() ? network_home_url( '/wp-json/' ) : home_url( '/wp-json/' ),
+					'ajaxUri'   => is_multisite() ? network_home_url( '/wp-admin/admin-ajax.php' ) : esc_url( admin_url( 'admin-ajax.php' ) ),
 					'endpoints' => array(
 						'themes'           => 'wapu/v1/themes/',
-						'cart'             => 'wapu/v1/cart/',
+						'cart'             => 'wapu_cart',
 						'addToCart'        => 'wapu/v1/add-to-cart/',
 						'getWishListModal' => 'wapu/v1/wishlist-get-modal/',
 						'addToWishlist'    => 'wapu/v1/wishlist-add/',

@@ -30,22 +30,22 @@ if ( ! class_exists( 'Wapu_Core_API_Wishlist_Get_Modal' ) ) {
 		public function callback( $params ) {
 
 			if ( ! function_exists( 'edd_wl_get_wish_lists' ) ) {
-				return new WP_REST_Response(
-					array(
+				return array(
+					'response' => array(
 						'message' => 'Wish Lists not enabled',
 					),
-					400
+					'code' => 400,
 				);
 			}
 
 			$theme = $params->get_param( 'theme' );
 
 			if ( ! $theme ) {
-				return new WP_REST_Response(
-					array(
+				array(
+					'response' => array(
 						'message' => 'Theme ID not provided',
 					),
-					400
+					'code' => 400,
 				);
 			}
 
@@ -94,14 +94,14 @@ if ( ! class_exists( 'Wapu_Core_API_Wishlist_Get_Modal' ) ) {
 			// count lists
 			$list_count = edd_wl_get_query() ? count ( edd_wl_get_query() ) : 0;
 
-			return new WP_REST_Response(
-				array(
+			return array(
+				'response' => array(
 					'post_id'    => $download_id,
 					'list_count' => $list_count,
 					'lists'      => html_entity_decode( $lists, ENT_COMPAT, 'UTF-8' ),
 					'modal'      => $modal,
 				),
-				200
+				'code' => 200,
 			);
 
 		}

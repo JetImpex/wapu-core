@@ -15,6 +15,9 @@
 					</a>
 				</div>
 				<div class="themes-listing__item-content">
+					<div v-if="post.topics" class="themes-listing__item-topics">
+						<div class="themes-listing__item-topic" v-for="topic in post.topics">{{ topic }}</div>
+					</div>
 					<div class="themes-listing__item-title">
 						<a class="themes-listing__item-link" :href="post.url">{{ post.title }}</a>
 					</div>
