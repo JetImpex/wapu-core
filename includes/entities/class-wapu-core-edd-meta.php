@@ -38,9 +38,28 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 		 * Constructor for the class
 		 */
 		public function __construct() {
+
 			$this->register_metaboxes();
 			$this->extend_default_metaboxes();
+
 			add_action( 'init', array( $this, 'register_taxes' ), 10 );
+			add_action( 'admin_enqueue_scripts', array( $this, 'clear_caches' ) );
+		}
+
+		/**
+		 * Clear post meta cache
+		 *
+		 * @return [type] [description]
+		 */
+		public function clear_caches() {
+
+			if ( empty( $_GET['clear_meta_cache'] ) ) {
+				return;
+			}
+
+			$cache = new Wapu_Core_Meta_Cache( get_the_ID() );
+			$cache->delete( esc_attr( $_GET['clear_meta_cache'] ) );
+
 		}
 
 		/**
@@ -94,6 +113,33 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 					'_wapu_single_large_thumb' => array(
 						'type'  => 'media',
 						'title' => esc_html__( 'Single Large Image', 'wapu-core' ),
+					),
+				),
+			) );
+
+			wapu_core()->get_core()->init_module( 'cherry-post-meta', array(
+				'id'            => 'wapu_clear_caches',
+				'title'         => esc_html__( 'Clear Caches', 'wapu-core' ),
+				'page'          => array( $this->post_type ),
+				'context'       => 'side',
+				'priority'      => 'high',
+				'callback_args' => false,
+				'fields' => array(
+					'_wapu_clear_reviews_cache' => array(
+						'type'  => 'html',
+						'title' => esc_html__( 'Clear Reviews Cache', 'wapu-core' ),
+						'html'  => sprintf(
+							'<a href="%s" class="button">Clear Reviews Cache</a><br><br>',
+							add_query_arg( array( 'clear_meta_cache' => '_rating_cache' ) )
+						),
+					),
+					'_wapu_clear_terms_cache' => array(
+						'type'  => 'html',
+						'title' => esc_html__( 'Clear Terms Cache', 'wapu-core' ),
+						'html'  => sprintf(
+							'<a href="%s" class="button">Clear Terms Cache</a>',
+							add_query_arg( array( 'clear_meta_cache' => '_terms_cache' ) )
+						),
 					),
 				),
 			) );

@@ -41,6 +41,29 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 
 			add_filter( 'cherry_breadcrumbs_items', array( $this, 'remove_download_from_trail' ) );
 
+			$this->update_reviews_cache();
+
+		}
+
+		public function update_reviews_cache() {
+			add_action( 'edd_spam_review', array( $this, 'clear_reviews_cache' ) );
+			add_action( 'edd_unspam_review', array( $this, 'clear_reviews_cache' ) );
+			add_action( 'edd_unapprove_review', array( $this, 'clear_reviews_cache' ) );
+			add_action( 'edd_approve_review', array( $this, 'clear_reviews_cache' ) );
+			add_action( 'edd_trash_review', array( $this, 'clear_reviews_cache' ) );
+			add_action( 'edd_restore_review', array( $this, 'clear_reviews_cache' ) );
+			add_action( 'edd_delete_review', array( $this, 'clear_reviews_cache' ) );
+		}
+
+		public function clear_reviews_cache() {
+
+			$review_id = trim( $_GET['r'] );
+			$review    = get_comment( $review_id, ARRAY_A );
+			$post_id   = $review['comment_post_ID'];
+
+			$cache = new Wapu_Core_Meta_Cache( $post_id );
+			$cache->delete( '_rating_cache' );
+
 		}
 
 		/**
@@ -504,22 +527,29 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 				return;
 			}
 
+			if ( true === $this->meta_cache->get( '_rating_cache' ) ) {
+				return;
+			}
+
+			$rating      = edd_reviews()->average_rating( false );
 			$reviews_num = edd_reviews()->count_reviews();
 
 			if ( ! $reviews_num ) {
+
+				ob_start();
+
 				echo '<div class="single-rating">';
 					echo '<div class="single-rating__no-reviews">';
 						echo 'There are no reviews yet.';
 					echo '</div>';
 				echo '</div>';
+
+				$content = ob_get_clean();
+				$this->meta_cache->update( '_rating_cache', $content );
+				echo $content;
+
 				return;
 			}
-
-			if ( true === $this->meta_cache->get( '_rating_cache' ) ) {
-				return;
-			}
-
-			$rating = edd_reviews()->average_rating( false );
 
 			ob_start();
 

@@ -59,6 +59,18 @@ if ( ! class_exists( 'Wapu_Core_Meta_Cache' ) ) {
 
 		}
 
+		/**
+		 * Try to print meta cache
+		 *
+		 * @param  [type] $key [description]
+		 * @return [type]      [description]
+		 */
+		public function delete( $key = null ) {
+
+			delete_post_meta( $this->post_id, $key );
+
+		}
+
 	}
 
 }
