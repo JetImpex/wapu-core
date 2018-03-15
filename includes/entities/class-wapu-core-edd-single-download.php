@@ -41,8 +41,44 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 
 			add_filter( 'cherry_breadcrumbs_items', array( $this, 'remove_download_from_trail' ) );
 
+			add_filter( 'edd_wl_create_list_link_defaults', array( $this, 'create_wl_args' ) );
+			add_filter( 'edd_wl_edit_settings_link_defaults', array( $this, 'edit_wl_args' ) );
+			add_filter( 'edd_wl_delete_list_link_defaults', array( $this, 'delete_wl_args' ) );
+
+			add_filter( 'edd_wl_item_title', array( $this, 'wl_item_title' ) );
+
 			$this->update_reviews_cache();
 
+		}
+
+		public function wl_item_title( $title ) {
+
+			$regex = '/<span class=\"edd-wl-item-title\">(.*)<span class=\"edd-wl-item-image\">/';
+
+			return preg_replace(
+				$regex,
+				'<span class="edd-wl-item-title"><span class="edd-wl-item-title-content">$1</span><span class="edd-wl-item-image">',
+				$title
+			);
+
+		}
+
+		public function delete_wl_args( $args ) {
+			$args['wrapper'] = '';
+			return $args;
+		}
+
+		public function edit_wl_args( $args ) {
+			$args['class'] = 'edd-edit-wl';
+			return $args;
+		}
+
+		public function create_wl_args( $args ) {
+
+			$args['wrapper'] = '';
+			$args['class']   = 'edd-create-wl';
+
+			return $args;
 		}
 
 		public function update_reviews_cache() {

@@ -457,6 +457,8 @@
 				page: 1,
 				pages: 1,
 				loaded: false,
+				sortbyList: queryData.sortby,
+				sortby: 'latest',
 				posts: [],
 				showCartPopup: false,
 				showWishlistPopup: false,
@@ -467,8 +469,12 @@
 				wishListLoaded: false,
 				wishListContent: '',
 				wishlistData: {},
+				moreLabel: 'Load More',
 			},
 			methods: {
+				sortThemes: function( key ) {
+					this.sortby = key;
+				},
 				salesLabel: function( sales ) {
 					if ( 1 == sales ) {
 						return ' sale';
@@ -488,10 +494,11 @@
 					self.cart              = post;
 
 					$.ajax({
-						url: settings.api.uri + settings.api.endpoints.getWishListModal,
+						url: settings.api.ajaxUri,
 						type: 'GET',
 						dataType: 'json',
 						data: {
+							action: settings.api.endpoints.getWishListModal,
 							theme: post.id
 						},
 					}).done( function( response ) {
@@ -531,6 +538,34 @@
 						}
 					} );
 
+				},
+				loadMore: function() {
+
+					var self = this;
+
+					self.moreLabel = 'Loading...';
+
+					$.ajax({
+						url: settings.api.uri + settings.api.endpoints.themes,
+						type: 'GET',
+						dataType: 'json',
+						data: {
+							page: this.page + 1,
+							per_page: queryData.per_page,
+							category: queryData.category,
+							thumb_size: queryData.thumb_size
+						},
+					}).done( function( response ) {
+
+						self.page = response.page;
+						self.moreLabel = 'Load More';
+
+						response.themes.forEach( function( item ) {
+							self.posts.push( item );
+						} );
+
+					} );
+
 				}
 			},
 			mounted: function() {
@@ -550,7 +585,7 @@
 
 					self.loaded = true;
 					self.page   = response.page;
-					self.pages  = response.pages;
+					self.pages  = response.total_pages;
 
 					response.themes.forEach( function( item ) {
 						self.posts.push( item );

@@ -70,7 +70,7 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 		public function register_taxes() {
 
 			$taxes = array(
-				'topic'               => 'Topic',
+				'download-topic'      => 'Topic',
 				'high-resolution'     => 'High Resolution',
 				'widget-ready'        => 'Widget Ready',
 				'compatible-browsers' => 'Compatible Browsers',

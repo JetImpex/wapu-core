@@ -584,7 +584,7 @@ if ( ! class_exists( 'Wapu_Core' ) ) {
 						'themes'           => 'wapu/v1/themes/',
 						'cart'             => 'wapu_cart',
 						'addToCart'        => 'wapu/v1/add-to-cart/',
-						'getWishListModal' => 'wapu/v1/wishlist-get-modal/',
+						'getWishListModal' => 'wapu_wishlist_get_modal',
 						'addToWishlist'    => 'wapu/v1/wishlist-add/',
 					),
 				)

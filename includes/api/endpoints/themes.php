@@ -35,7 +35,7 @@ if ( ! class_exists( 'Wapu_Core_API_Themes' ) ) {
 				'post_type'      => 'download',
 				'post_status'    => 'publish',
 				'posts_per_page' => isset( $args['per_page'] ) ? absint( $args['per_page'] ) : 6,
-				'paged'          => isset( $args['page'] ) ? absint( $args['per_page'] ) : 1,
+				'paged'          => isset( $args['page'] ) ? absint( $args['page'] ) : 1,
 			);
 
 			if ( ! empty( $args['category'] ) ) {
@@ -91,7 +91,7 @@ if ( ! class_exists( 'Wapu_Core_API_Themes' ) ) {
 					$sale_price = edd_currency_filter( edd_format_amount( $sale_price ) );
 				}
 
-				$terms       = wp_get_post_terms( $post->ID, 'topic' );
+				$terms       = wp_get_post_terms( $post->ID, 'download-topic' );
 				$terms_names = wp_list_pluck( $terms, 'name' );
 
 				$current_post = array(

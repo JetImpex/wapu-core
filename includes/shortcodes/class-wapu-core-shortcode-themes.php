@@ -71,7 +71,15 @@ class Wapu_Core_Themes_Shortcode extends Wapu_Core_Shortcode {
 		$query_args = array(
 			'category'   => $category,
 			'per_page'   => $per_page,
-			'thumb_size' => $thumb_size
+			'thumb_size' => $thumb_size,
+			'sortby'     => array(
+				'latest'       => 'Newest Items',
+				'best_sellers' => 'Best Sellers',
+				'top_rated'    => 'Top Rated',
+				'best_sellers' => 'Best Sellers',
+				'price_asc'    => 'Price: low to high',
+				'price_desc'   => 'Price: high to low'
+			),
 		);
 
 		wp_enqueue_script( 'vue' );

@@ -19,12 +19,16 @@ if ( ! class_exists( 'Wapu_Core_API_Wishlist_Get_Modal' ) ) {
 	 */
 	class Wapu_Core_API_Wishlist_Get_Modal extends Wapu_Core_Base_Endpoint {
 
+		public function is_ajax() {
+			return true;
+		}
+
 		public function methods() {
 			return 'GET';
 		}
 
 		public function route() {
-			return '/wishlist-get-modal';
+			return 'wapu_wishlist_get_modal';
 		}
 
 		public function callback( $params ) {
@@ -38,7 +42,7 @@ if ( ! class_exists( 'Wapu_Core_API_Wishlist_Get_Modal' ) ) {
 				);
 			}
 
-			$theme = $params->get_param( 'theme' );
+			$theme = isset( $_REQUEST['theme'] ) ? absint( $_REQUEST['theme'] ) : false;
 
 			if ( ! $theme ) {
 				array(
