@@ -459,6 +459,7 @@
 				loaded: false,
 				sortbyList: queryData.sortby,
 				sortby: 'latest',
+				sortbyShow: false,
 				posts: [],
 				showCartPopup: false,
 				showWishlistPopup: false,
@@ -473,7 +474,16 @@
 			},
 			methods: {
 				sortThemes: function( key ) {
-					this.sortby = key;
+
+					this.sortby     = key;
+					this.sortbyShow = false;
+					this.page       = 1;
+					this.loaded     = false;
+
+					this.posts.splice( 0, this.posts.length );
+
+					this.updateThemesList();
+
 				},
 				salesLabel: function( sales ) {
 					if ( 1 == sales ) {
@@ -541,23 +551,31 @@
 				},
 				loadMore: function() {
 
-					var self = this;
+					this.moreLabel = 'Loading...';
+					this.page++;
+					this.updateThemesList();
 
-					self.moreLabel = 'Loading...';
+				},
+				updateThemesList: function() {
+
+					var self = this;
 
 					$.ajax({
 						url: settings.api.uri + settings.api.endpoints.themes,
 						type: 'GET',
 						dataType: 'json',
 						data: {
-							page: this.page + 1,
+							page: self.page,
+							sort: self.sortby,
 							per_page: queryData.per_page,
 							category: queryData.category,
 							thumb_size: queryData.thumb_size
 						},
 					}).done( function( response ) {
 
-						self.page = response.page;
+						self.loaded    = true;
+						self.page      = response.page;
+						self.pages     = response.total_pages;
 						self.moreLabel = 'Load More';
 
 						response.themes.forEach( function( item ) {
@@ -572,26 +590,7 @@
 
 				var self = this;
 
-				$.ajax({
-					url: settings.api.uri + settings.api.endpoints.themes,
-					type: 'GET',
-					dataType: 'json',
-					data: {
-						per_page: queryData.per_page,
-						category: queryData.category,
-						thumb_size: queryData.thumb_size
-					},
-				}).done( function( response ) {
-
-					self.loaded = true;
-					self.page   = response.page;
-					self.pages  = response.total_pages;
-
-					response.themes.forEach( function( item ) {
-						self.posts.push( item );
-					} );
-
-				} );
+				self.updateThemesList();
 
 				$( self.$el ).on( 'click', '.edd-wl-save', function( event ) {
 
@@ -620,6 +619,10 @@
 					} );
 
 				} );
+
+				$( document ).on( 'click', function() {
+					self.sortbyShow = false;
+				});
 
 			}
 		});

@@ -38,6 +38,40 @@ if ( ! class_exists( 'Wapu_Core_API_Themes' ) ) {
 				'paged'          => isset( $args['page'] ) ? absint( $args['page'] ) : 1,
 			);
 
+			/**
+			 * Set sorting params
+			 */
+			$sort = ! empty( $args['sort'] ) ? $args['sort'] : 'latest';
+
+			switch ( $sort ) {
+
+				case 'best_sellers':
+					$query_args['orderby']   = 'meta_value_num';
+					$query_args['meta_key']  = '_total_sales';
+					$query_args['meta_type'] = 'NUMERIC';
+					break;
+
+				case 'price_desc':
+					$query_args['orderby']   = 'meta_value_num';
+					$query_args['meta_key']  = '_sort_price';
+					$query_args['meta_type'] = 'DECIMAL';
+					break;
+
+				case 'price_asc':
+					$query_args['orderby']   = 'meta_value_num';
+					$query_args['order']     = 'ASC';
+					$query_args['meta_key']  = '_sort_price';
+					$query_args['meta_type'] = 'DECIMAL';
+					break;
+
+				case 'top_rated':
+					$query_args['orderby']   = 'meta_value_num';
+					$query_args['meta_key']  = 'edd_reviews_average_rating';
+					$query_args['meta_type'] = 'DECIMAL';
+					break;
+
+			}
+
 			if ( ! empty( $args['category'] ) ) {
 				$query_args['tax_query'] = array(
 					array(

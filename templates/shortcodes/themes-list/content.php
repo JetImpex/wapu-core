@@ -4,16 +4,18 @@
  */
 ?>
 <div id="themes-listing" data-query='<?php echo json_encode( $query_args ); ?>'>
-	<div v-if="loaded">
-		<div class="themes-listing-sortby">
-			<div class="themes-listing-sortby__label">
-				Sort by:
-			</div>
-			<div class="themes-listing-sortby__current" v-html="sortbyList[ sortby ]"></div>
-			<div class="themes-listing-sortby__list">
-				<div class="themes-listing-sortby__list-item" v-for="(sortLabel, sortKey) in sortbyList" @click="sortThemes( sortKey )">{{ sortLabel }}</div>
-			</div>
+	<div class="themes-listing-sortby">
+		<div class="themes-listing-sortby__label">
+			Sort by:
 		</div>
+		<div class="themes-listing-sortby__current" v-html="sortbyList[ sortby ]" @click.stop="sortbyShow = !sortbyShow"></div>
+		<transition name="sortby">
+			<div v-if="sortbyShow" class="themes-listing-sortby__list" @click.stop="sortbyShow = true">
+				<div class="themes-listing-sortby__list-item" v-for="(sortLabel, sortKey) in sortbyList" @click.stop="sortThemes( sortKey )">{{ sortLabel }}</div>
+			</div>
+		</transition>
+	</div>
+	<div v-if="loaded">
 		<div class="themes-listing">
 			<div class="themes-listing__item" v-for="post in posts">
 				<div class="themes-listing__item-inner">

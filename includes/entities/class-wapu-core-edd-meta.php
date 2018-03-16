@@ -44,6 +44,37 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 
 			add_action( 'init', array( $this, 'register_taxes' ), 10 );
 			add_action( 'admin_enqueue_scripts', array( $this, 'clear_caches' ) );
+
+			add_action( 'save_post', array( $this, 'update_sales_meta' ), 999 );
+
+		}
+
+		/**
+		 * Update sales meta
+		 *
+		 * @return [type] [description]
+		 */
+		public function update_sales_meta( $post_id ) {
+
+			if ( $this->post_type !== get_post_type( $post_id ) ) {
+				return;
+			}
+
+			ob_start();
+			wapu_core()->edd->single->sales( '%s', $post_id );
+			$sales = ob_get_clean();
+
+			$price = ! empty( $_POST['_sale_price'] ) ? $_POST['_sale_price'] : $_POST['edd_price'];
+
+			update_post_meta( $post_id, '_total_sales', absint( $sales ) );
+			update_post_meta( $post_id, '_sort_price',  floatval( $price ) );
+
+			$rating = get_post_meta( $post_id, 'edd_reviews_average_rating', true );
+
+			if ( ! $rating ) {
+				update_post_meta( $post_id, 'edd_reviews_average_rating', 0 );
+			}
+
 		}
 
 		/**
