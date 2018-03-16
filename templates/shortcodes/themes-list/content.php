@@ -3,7 +3,7 @@
  * Main themes list content template
  */
 ?>
-<div id="themes-listing" data-query='<?php echo json_encode( $query_args ); ?>'>
+<div id="themes-listing" data-query='<?php echo json_encode( $query_args ); ?>' class="hidden">
 	<div class="themes-listing-sortby">
 		<div class="themes-listing-sortby__label">
 			Sort by:
@@ -33,7 +33,7 @@
 						<div class="themes-listing__item-title">
 							<a class="themes-listing__item-link" :href="post.url">{{ post.title }}</a>
 						</div>
-						<div v-if="post.rating" class="themes-listing__item-rating" v-html="post.rating"></div>
+						<div class="themes-listing__item-rating" v-html="post.rating"></div>
 						<div class="themes-listing__item-footer">
 							<div class="themes-listing__item-meta">
 								<div v-if="post.sale_price" class="themes-listing__item-price">
@@ -48,9 +48,11 @@
 							<div class="themes-listing__item-actions">
 								<button class="themes-listing__item-wishlist" @click="addToWishlist( post )">
 									<i class="nc-icon-mini ui-2_favourite-28"></i>
+									<span class="themes-listing__tooltip">Add to Wish List</span>
 								</button>
 								<button class="themes-listing__item-add-to-cart" @click="addToCart( post )">
 									<i class="nc-icon-mini shopping_cart-simple"></i>
+									<span class="themes-listing__tooltip">Add to Cart</span>
 								</button>
 							</div>
 						</div>
@@ -62,6 +64,7 @@
 			<button @click="loadMore">{{ moreLabel }}</button>
 		</div>
 	</div>
+	<div v-else class="themes-preloader"></div>
 	<div v-if="showCartPopup" :class="[ 'wapu-popup', 'listing-popup' ]">
 		<div class="wapu-popup__overlay" @click="closePopups"></div>
 		<div class="wapu-popup__content">

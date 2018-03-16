@@ -20,5 +20,17 @@ global $post;
 	</div>
 </div>
 <div class="download-single-description downloads-content-box">
-	<?php echo $post->post_content; ?>
+	<div class="downloads-content-box__inner">
+		<?php echo $post->post_content; ?>
+	</div>
+	<div class="content-trigger">
+		<div class="content-trigger__expand">
+			More
+			<i class="nc-icon-mini arrows-1_minimal-down"></i>
+		</div>
+		<div class="content-trigger__collapse">
+			Less
+			<i class="nc-icon-mini arrows-1_minimal-up"></i>
+		</div>
+	</div>
 </div>

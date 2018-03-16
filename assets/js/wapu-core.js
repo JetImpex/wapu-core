@@ -17,6 +17,7 @@
 			addToCart: '.download-add-to-cart',
 			headerCart: '.header-cart__item',
 			headerCartClose: '.cart-close',
+			contentTrigger: '.content-trigger',
 		},
 
 		objects: {
@@ -50,6 +51,7 @@
 				.on( 'click.wapuCore', wapuCore.css.addToCart, wapuCore.addToCart )
 				.on( 'click.wapuCore', wapuCore.css.headerCart, wapuCore.openCartPopup )
 				.on( 'click.wapuCore', wapuCore.css.headerCartClose, wapuCore.closeCartPopup )
+				.on( 'click.wapuCore', wapuCore.css.contentTrigger, wapuCore.expandThemeContent )
 				.on( 'focus.wapuCore', wapuCore.css.docInput, wapuCore.removeError )
 				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.removeError )
 				.on( 'keyup.wapuCore', wapuCore.css.docInput, wapuCore.openOnEnter )
@@ -59,6 +61,10 @@
 			this.loadFirstTab();
 			this.loadCartData();
 
+		},
+
+		expandThemeContent: function( event ) {
+			$( this ).prev( '.downloads-content-box__inner' ).toggleClass( 'content-expanded' );
 		},
 
 		loadCartData: function() {
@@ -530,7 +536,7 @@
 
 					var self = this;
 
-					this.cartLabel = 'Adding...';
+					self.cartLabel      = 'Adding...';
 
 					$.ajax({
 						url: settings.api.uri + settings.api.endpoints.addToCart,
@@ -540,11 +546,11 @@
 							theme: id
 						},
 					}).done( function( response ) {
-						if ( response.count ) {
+						if ( response.checkout ) {
 							self.checkoutURL = response.checkout;
 							self.addedToCart = true;
 						} else {
-							this.cartLabel = 'Error. Please try again later';
+							self.cartLabel = 'Error. Please try again later';
 						}
 					} );
 
@@ -590,13 +596,16 @@
 
 				var self = this;
 
+				$( self.$el ).removeClass( 'hidden' );
+
 				self.updateThemesList();
 
 				$( self.$el ).on( 'click', '.edd-wl-save', function( event ) {
 
 					event.preventDefault();
 
-					var $form = $( this ).closest( '.listing-wl' ),
+					var $this = $( this ),
+						$form = $this.closest( '.listing-wl' ),
 						data  = {
 							download_id: self.cart.id,
 							price_ids: [ self.cart.id ],
@@ -604,6 +613,8 @@
 							list_name: $form.find( 'input[name="list-name"]' ).val(),
 							list_status: $form.find( 'select[name="list-status"] option:selected' ).val(),
 						};
+
+					$this.html( 'Saving...' );
 
 					if ( $form.find( 'select[name="user-lists"]' ).length ) {
 						data.list_id = $form.find( 'select[name="user-lists"] option:selected' ).val();
@@ -616,6 +627,7 @@
 						data: data,
 					}).done( function( response ) {
 						self.wishListContent = response.result;
+						$this.html( 'Save' );
 					} );
 
 				} );

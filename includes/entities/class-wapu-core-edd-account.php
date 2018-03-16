@@ -51,6 +51,33 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 		}
 
 		/**
+		 * Login link
+		 * @param  array  $args [description]
+		 * @return [type]       [description]
+		 */
+		public function login_link( $args = array() ) {
+
+			$args = wp_parse_args( $args, array(
+				'class' => '',
+				'label' => 'Log In',
+			) );
+
+			$url = $this->get_login_page_url();
+
+			if ( ! $url ) {
+				return;
+			}
+
+			return sprintf(
+				'<a%1$s href="%3$s">%2$s</a>',
+				( ! empty( $args['class'] ) ? ' class="' . esc_attr( $args['class'] ) . '"' : '' ),
+				esc_attr( $args['label'] ),
+				$url
+			);
+
+		}
+
+		/**
 		 * Returns cart content on ajax request
 		 *
 		 * @return [type] [description]
@@ -140,6 +167,20 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 			global $edd_options;
 
 			$page_id = isset( $edd_options['wapu_core_account_page'] ) ? $edd_options['wapu_core_account_page'] : edd_get_option( 'wapu_core_account_page' );
+
+			if ( ! $page_id ) {
+				return '';
+			}
+
+			return get_page_link( $page_id );
+
+		}
+
+		public function get_login_page_url() {
+
+			global $edd_options;
+
+			$page_id = isset( $edd_options['wapu_core_login_page'] ) ? $edd_options['wapu_core_login_page'] : edd_get_option( 'wapu_core_login_page' );
 
 			if ( ! $page_id ) {
 				return '';
@@ -373,10 +414,25 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 		 */
 		public function template_loader( $template ) {
 
-			$account_page = edd_get_option( 'wapu_core_account_page' );
+			global $edd_options;
+
+			$account_page = isset( $edd_options['wapu_core_account_page'] ) ? $edd_options['wapu_core_account_page'] : edd_get_option( 'wapu_core_account_page' );
+
+			$login_page = isset( $edd_options['wapu_core_login_page'] ) ? $edd_options['wapu_core_login_page'] : edd_get_option( 'wapu_core_login_page' );
 
 			if ( $account_page && is_page( $account_page ) ) {
 				$template = wapu_core()->get_template( 'pages/account/index.php' );
+			}
+
+			if ( $login_page && is_page( $login_page ) ) {
+
+				if ( ! is_user_logged_in() ) {
+					$template = wapu_core()->get_template( 'pages/login/index.php' );
+				} else {
+					wp_redirect( get_page_link( $account_page ) );
+					die();
+				}
+
 			}
 
 			return $template;
