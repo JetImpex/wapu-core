@@ -45,15 +45,9 @@ if ( ! class_exists( 'Wapu_Core_API_Cart' ) ) {
 				$content = wapu_core()->edd->account->get_cart_contents();
 			}
 
-			$current_user = wp_get_current_user();
-
 			ob_start();
 
-			$redirect = get_permalink();
-
-			if ( ! $redirect ) {
-				$redirect = home_url( '/' );
-			}
+			$redirect = home_url( '/' );
 
 			if ( ! is_user_logged_in() ) {
 				printf(
@@ -61,13 +55,17 @@ if ( ! class_exists( 'Wapu_Core_API_Cart' ) ) {
 					wapu_core()->edd->account->login_link()
 				);
 			} else {
+				$current_user = wp_get_current_user();
 				printf(
-					'<div class="cart-title">Hello, %s <a href="%s">(Log Out)</a></div>',
+					'<div class="cart-title">Hello, %1$s <a href="%2$s">(Log Out)</a></div>',
+					$current_user->display_name,
 					wp_logout_url( $redirect )
 				);
 			}
 
-			wapu_core()->edd->account->render_account_menu();
+			if ( wapu_core()->edd ) {
+				wapu_core()->edd->account->render_account_menu();
+			}
 
 			$account = ob_get_clean();
 

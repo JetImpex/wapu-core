@@ -64,7 +64,8 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 			wapu_core()->edd->single->sales( '%s', $post_id );
 			$sales = ob_get_clean();
 
-			$price = ! empty( $_POST['_sale_price'] ) ? $_POST['_sale_price'] : $_POST['edd_price'];
+			$price = ! empty( $_POST['edd_price'] ) ? $_POST['edd_price'] : 0;
+			$price = ! empty( $_POST['_sale_price'] ) ? $_POST['_sale_price'] : $price;
 
 			update_post_meta( $post_id, '_total_sales', absint( $sales ) );
 			update_post_meta( $post_id, '_sort_price',  floatval( $price ) );
@@ -119,6 +120,7 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 						'labels' => array(
 							'name' => $name,
 						),
+						'show_in_nav_menus' => false,
 					)
 				);
 

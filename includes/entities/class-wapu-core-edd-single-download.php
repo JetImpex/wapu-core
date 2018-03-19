@@ -113,6 +113,10 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 				return $items;
 			}
 
+			if ( 4 === count( $items ) ) {
+				unset( $items[1] );
+			}
+
 			$download_id = get_the_ID();
 			$category    = wp_get_post_terms( $download_id, 'download_category' );
 
@@ -130,11 +134,13 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 				return $items;
 			}
 
-			$items[1] = sprintf(
+			$new = sprintf(
 				'<div class="breadcrumbs__item"><a href="%1$s" class="breadcrumbs__item-link" rel="tag" title="%2$s">%2$s</a></div>',
 				$cat_url,
 				$cat_name
 			);
+
+			array_splice( $items, 1, 1, $new );
 
 			return $items;
 
