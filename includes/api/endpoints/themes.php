@@ -106,7 +106,11 @@ if ( ! class_exists( 'Wapu_Core_API_Themes' ) ) {
 
 			foreach ( $query->posts as $post ) {
 
-				$rating = '';
+				$rating     = '';
+				$price      = 0;
+				$sale_price = 0;
+				$sales      = 0;
+				$live_demo  = '';
 
 				if ( function_exists( 'edd_reviews' ) ) {
 					$average = edd_reviews()->average_rating( false, $post->ID );
@@ -115,26 +119,37 @@ if ( ! class_exists( 'Wapu_Core_API_Themes' ) ) {
 					}
 				}
 
-				ob_start();
-				wapu_core()->edd->single->sales( '%s', $post->ID );
-				$sales = ob_get_clean();
+				if ( class_exists( 'Easy_Digital_Downloads' ) ) {
 
-				$sale_price = get_post_meta( $post->ID, '_sale_price', true );
+					ob_start();
+					wapu_core()->edd->single->sales( '%s', $post->ID );
+					$sales = ob_get_clean();
 
-				if ( ! empty( $sale_price ) ) {
-					$sale_price = edd_currency_filter( edd_format_amount( $sale_price ) );
+					$sale_price = get_post_meta( $post->ID, '_sale_price', true );
+
+					if ( ! empty( $sale_price ) ) {
+						$sale_price = edd_currency_filter( edd_format_amount( $sale_price ) );
+					}
+
+					$price     = edd_currency_filter( edd_format_amount( edd_get_download_price( $post->ID ) ) );
+					$live_demo = wapu_core()->edd->single->get_live_demo_url( $post->ID );
+
 				}
 
 				$terms       = wp_get_post_terms( $post->ID, 'download-topic' );
-				$terms_names = wp_list_pluck( $terms, 'name' );
+				$terms_names = array();
+
+				if ( is_array( $terms ) && ! empty( $terms ) ) {
+					$terms_names = wp_list_pluck( $terms, 'name' );
+				}
 
 				$current_post = array(
 					'id'         => $post->ID,
 					'title'      => $post->post_title,
 					'url'        => get_permalink( $post->ID ),
-					'live_demo'  => wapu_core()->edd->single->get_live_demo_url( $post->ID ),
+					'live_demo'  => $live_demo,
 					'thumb'      => get_the_post_thumbnail_url( $post->ID, $thumb_size ),
-					'price'      => edd_currency_filter( edd_format_amount( edd_get_download_price( $post->ID ) ) ),
+					'price'      => $price,
 					'sale_price' => $sale_price,
 					'sales'      => $sales,
 					'rating'     => $rating,
