@@ -184,11 +184,14 @@ if ( ! class_exists( 'Wapu_Core_EDD_Meta' ) ) {
 				'context'       => 'normal',
 				'priority'      => 'high',
 				'callback_args' => false,
-				'fields' => array(
-					'_wapu_ld_url' => array(
-						'type'  => 'text',
-						'title' => esc_html__( 'Live Demo URL', 'wapu-core' ),
-					),
+				'fields' => apply_filters(
+					'wapu-core/edd/metabxes/misc',
+					array(
+						'_wapu_ld_url' => array(
+							'type'  => 'text',
+							'title' => esc_html__( 'Live Demo URL', 'wapu-core' ),
+						),
+					)
 				),
 			) );
 

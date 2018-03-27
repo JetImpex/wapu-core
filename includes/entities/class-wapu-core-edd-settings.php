@@ -113,7 +113,19 @@ if ( ! class_exists( 'Wapu_Core_EDD_Settings' ) ) {
 						'id'   => 'wapu_price_notes',
 						'name' => 'Notes after Add to Cart button',
 						'type' => 'textarea',
-					)
+					),
+					'wapu_bestseller_min' => array(
+						'id'      => 'wapu_bestseller_min',
+						'name'    => 'Betseller badge starts from',
+						'type'    => 'text',
+						'default' => 30,
+					),
+					'wapu_new_period' => array(
+						'id'      => 'wapu_new_period',
+						'name'    => 'Mark theme as new for (hours)',
+						'type'    => 'text',
+						'default' => 12,
+					),
 				),
 			);
 			return $settings;

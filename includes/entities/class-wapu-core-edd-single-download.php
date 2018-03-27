@@ -349,7 +349,7 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 				$wl_url   = '#';
 				$wl_label = 'Add to Wishlist';
 				$wl_class = 'button button-wish-list edd-wl-open-modal edd-wl-action';
-				$wl_icon  = 'nc-icon-mini tech_desktop-screen';
+				$wl_icon  = 'nc-icon-mini ui-2_favourite-28';
 				$wl_atts  = array(
 					'data-action'         => 'edd_wl_open_modal',
 					'data-download-id'    => $download_id,
@@ -463,7 +463,7 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 		 *
 		 * @return [type] [description]
 		 */
-		public function sales( $format = '%s', $post_id = null ) {
+		public function sales( $format = '%s', $post_id = null, $echo = true ) {
 
 			if ( ! $post_id ) {
 				global $post;
@@ -477,7 +477,11 @@ if ( ! class_exists( 'Wapu_Core_EDD_Single_Download' ) ) {
 				$sales = absint( $sales ) + absint( $fake_sales );
 			}
 
-			printf( $format, $sales );
+			if ( $echo ) {
+				printf( $format, $sales );
+			} else {
+				return sprintf( $format, $sales );
+			}
 		}
 
 		/**

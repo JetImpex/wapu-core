@@ -154,9 +154,11 @@ if ( ! class_exists( 'Wapu_Core_API_Themes' ) ) {
 					'sales'      => $sales,
 					'rating'     => $rating,
 					'topics'     => $terms_names,
+					'badges'     => $this->get_badges( $post ),
 				);
 
 				$posts[] = $current_post;
+
 			}
 
 			$data['themes'] = $posts;
@@ -165,6 +167,20 @@ if ( ! class_exists( 'Wapu_Core_API_Themes' ) ) {
 				'response' => $data,
 				'code'     => 200,
 			);
+
+		}
+
+		/**
+		 * Get badges
+		 * @return
+		 */
+		public function get_badges( $post ) {
+
+			if ( empty( wapu_core()->edd ) ) {
+				return array();
+			}
+
+			return wapu_core()->edd->badges->get_post_badges( $post );
 
 		}
 

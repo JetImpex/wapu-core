@@ -19,6 +19,11 @@
 		<div class="themes-listing">
 			<div class="themes-listing__item" v-for="post in posts">
 				<div class="themes-listing__item-inner">
+					<div class="themes-listing__badges">
+						<div v-for="( badgeLabel, badgeID ) in post.badges" class:="[ 'themes-listing__badge', 'themes-listing__badge-' + badgeID ]">
+							{{ badgeLabel }}
+						</div>
+					</div>
 					<div v-if="post.thumb" class="themes-listing__item-thumb">
 						<img :src="post.thumb">
 						<a class="":href="post.live_demo">

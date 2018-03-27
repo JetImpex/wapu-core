@@ -33,8 +33,6 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 			add_action( 'user_register', array( $this, 'subscribe_user_on_register' ) );
 			//add_action( 'wp_enqueue_scripts', array( $this, 'subscribe_user_on_register' ) );
 
-			add_action( 'wapu_header_cart', array( $this, 'add_header_cart' ) );
-
 			add_action( 'wp_ajax_wapu_get_cart_content', array( $this, 'ajax_cart_contents' ) );
 			add_action( 'wp_ajax_nopriv_wapu_get_cart_content', array( $this, 'ajax_cart_contents' ) );
 
@@ -119,27 +117,6 @@ if ( ! class_exists( 'Wapu_Core_EDD_Account' ) ) {
 
 		public function ajax_cart_contents() {
 			wp_send_json_success( $this->get_cart_contents() );
-		}
-
-		/**
-		 * Add header cart
-		 */
-		public function add_header_cart() {
-			wp_enqueue_script( 'wapu-core' );
-			include wapu_core()->get_template( 'entities/header-cart/cart-link.php' );
-			add_action( 'wp_footer', array( $this, 'add_cart_popups' ) );
-		}
-
-		/**
-		 * Render cart popups
-		 */
-		public function add_cart_popups() {
-
-			echo '<div class="cart-popups">';
-				include wapu_core()->get_template( 'entities/header-cart/account-popup.php' );
-				include wapu_core()->get_template( 'entities/header-cart/cart-popup.php' );
-				echo '<div class="cart-overlay"></div>';
-			echo '</div>';
 		}
 
 		/**

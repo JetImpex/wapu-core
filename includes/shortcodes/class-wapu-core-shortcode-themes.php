@@ -53,6 +53,11 @@ class Wapu_Core_Themes_Shortcode extends Wapu_Core_Shortcode {
 		);
 	}
 
+	public function append_dependency( $handle, $dep ){
+		global $wp_scripts;
+		$wp_scripts->registered[ $handle ]->deps[] = $dep;
+	}
+
 	/**
 	 * Shortcode
 	 *
@@ -81,6 +86,8 @@ class Wapu_Core_Themes_Shortcode extends Wapu_Core_Shortcode {
 				'price_desc'   => 'Price: high to low'
 			),
 		);
+
+		$this->append_dependency( 'wapu-core', 'vue' );
 
 		wp_enqueue_script( 'vue' );
 		wp_enqueue_script( 'wapu-core' );
